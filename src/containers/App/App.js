@@ -11,6 +11,7 @@ import { isLoaded as isAuthLoaded, load as loadAuth, logout } from 'redux/module
 import { push } from 'react-router-redux';
 import config from '../../config';
 import { asyncConnect } from 'redux-async-connect';
+import ModalWindow from '../../components/ModalWindows/ModalWindow';
 
 @asyncConnect([{
   promise: ({store: {dispatch, getState}}) => {
@@ -62,6 +63,7 @@ export default class App extends Component {
 
     return (
       <div className="global-application-container">
+        <ModalWindow />
         <Helmet {...config.app.head}/>
         <Navbar fixedTop>
           <Navbar.Header>

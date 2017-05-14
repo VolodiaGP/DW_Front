@@ -6,15 +6,17 @@ import { pagination } from 'violet-paginator';
 
 import auth from './auth';
 import counter from './counter';
-import {reducer as form} from 'redux-form';
+import { reducer as formReducer } from 'redux-form';
 import info from './info';
 import widgets from './widgets';
+import modal from './modal';
 
 export default combineReducers({
   routing: routerReducer,
   reduxAsyncConnect,
   auth,
-  form,
+  form: formReducer,
+  modal,
   multireducer: multireducer({
     counter1: counter,
     counter2: counter,
