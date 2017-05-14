@@ -4,6 +4,8 @@ import inputField from './inputField';
 
 const validate = (values) => {
   const requiredFields = ['first_name', 'last_name', 'email', 'login', 'password', 'submit_password'];
+  const lengthFields = ['password', 'submit_password'];
+  const mailFields = ['email'];
   const errors = {};
   requiredFields.map((field) => {
     if (!values[field]) {
@@ -12,6 +14,21 @@ const validate = (values) => {
     }
     return true;
   });
+  lengthFields.map((field) => {
+    if (values[field] && values[field].length <= 5) {
+      errors[field] = 'Поле має містити щонайменше 6 символів!';
+      return errors[field];
+    }
+    return true;
+  });
+  mailFields.map((field) => {
+    if (values[field] && !values[field].match(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{1,})$/i)) {
+      errors[field] = 'Це поле має бути поштою';
+    }
+  });
+  if (values.submit_password !== values.password) {
+    errors.submit_password = 'Паролі не співпадають!';
+  }
   return errors;
 };
 
