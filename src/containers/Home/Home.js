@@ -12,6 +12,11 @@ export default class Home extends Component {
     dispatch(modalDisplay('registration'));
   }
 
+  handleLoginButtonClick() {
+    const dispatch = this.context.store.dispatch;
+    dispatch(modalDisplay('login'));
+  }
+
   render() {
     require('./Home.scss');
     const firstImage = require('../../../static/img/home/kiev_obl.gif');
@@ -29,7 +34,12 @@ export default class Home extends Component {
               >
                 Реєстрація
               </div>
-              <div className="button-hero login">Вхід</div>
+              <div
+                className="button-hero login"
+                onClick={() => { this.handleLoginButtonClick(); }}
+              >
+                Вхід
+              </div>
             </div>
           </div>
         </div>

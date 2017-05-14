@@ -2,6 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import { modalHide } from 'redux/modules/modal';
 import RegistrationForm from './RegistrationForm';
+import LoginForm from './LoginForm';
 
 @connect(
   state => ({
@@ -34,6 +35,7 @@ export default class ModalWindow extends Component {
           <div className="modal-field-container" onClick={(event) => { event.stopPropagation(); }}>
             <i className="modal-close fa fa-close" onClick={() => { dispatch(modalHide()); }} />
             {modal.modalToDisplay === 'registration' && <RegistrationForm />}
+            {modal.modalToDisplay === 'login' && <LoginForm />}
           </div>
           : <div />}
       </div>
