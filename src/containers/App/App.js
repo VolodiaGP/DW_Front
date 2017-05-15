@@ -115,10 +115,7 @@ export default class App extends Component {
             </Nav>
           </Navbar.Collapse>
         </Navbar>
-
-        <div className={styles.appContent}>
-          {this.props.children}
-        </div>
+        {this.props.children}
         <footer>
           <div className="well text-center">
             Футер
