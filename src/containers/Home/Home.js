@@ -1,6 +1,25 @@
 import React, { Component, PropTypes } from 'react';
 import Helmet from 'react-helmet';
+import { withGoogleMap, GoogleMap, Marker } from 'react-google-maps';
 import { modalDisplay } from 'redux/modules/modal';
+
+// Wrap all `react-google-maps` components with `withGoogleMap` HOC
+// and name it GettingStartedGoogleMap
+const GettingStartedGoogleMap = withGoogleMap(props => (
+  <GoogleMap
+    ref={props.onMapLoad}
+    defaultZoom={3}
+    defaultCenter={{ lat: -25.363882, lng: 131.044922 }}
+    onClick={props.onMapClick}
+  >
+    {props.markers.map((marker, index) => (
+      <Marker
+        {...marker}
+        onRightClick={() => props.onMarkerRightClick(index)}
+      />
+    ))}
+  </GoogleMap>
+));
 
 export default class Home extends Component {
   static contextTypes = {
@@ -21,6 +40,14 @@ export default class Home extends Component {
     require('./Home.scss');
     const firstImage = require('../../../static/img/home/kiev_obl.gif');
     const mineralsImage = require('../../../static/img/home/minerals.jpg');
+    const markers = [{
+      position: {
+        lat: 25.0112183,
+        lng: 121.52067570000001,
+      },
+      key: `Taiwan`,
+      defaultAnimation: 2,
+    }];
     return (
       <div className="home-page-container">
         <Helmet title="Home"/>
@@ -71,6 +98,18 @@ export default class Home extends Component {
               <div className="see-more default-dark-button">Перейти до бази</div>
             </div>
           </div>
+          <GettingStartedGoogleMap
+            containerElement={
+              <div style={{ height: `100%` }} />
+            }
+            mapElement={
+              <div style={{ height: `100%` }} />
+            }
+            onMapLoad={() => { console.log('mapLoaded'); }}
+            onMapClick={() => { console.log('omMapClick'); }}
+            markers={markers}
+            onMarkerRightClick={() => { console.log('onMarkerRightClick'); }}
+          />
         </div>
       </div>
     );
