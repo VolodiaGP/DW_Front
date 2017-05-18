@@ -4,6 +4,7 @@
     .map-container {
       width: 80%;
       height: 80vh;
+      display: inline-block;
       .info-container {
         width: 250px;
         .name {
@@ -17,6 +18,37 @@
           display: inline-block;
           margin-right: 10px;
           margin-top: 5px;
+        }
+      }
+    }
+    .filters-container {
+      width: 20%;
+      display: inline-block;
+      float: right;
+      min-height: 80vh;
+      background: #eaeaea;
+      .title {
+        font-size: 15px;
+        letter-spacing: 1px;
+        text-align: center;
+        background: #657fbb;
+        color: white;
+        font-weight: bold;
+        padding: 5px;
+      }
+      .regions-list {
+        .region-item {
+          padding: 5px 20px;
+          background: #dbc9e6;
+          border-bottom: solid 1px;
+          &:hover {
+            cursor: pointer;
+            background-color: #d4b0ea;
+          }
+          &.active {
+            background-color: #d4b0ea;
+            font-weight: bold;
+          }
         }
       }
     }

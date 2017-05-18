@@ -12,7 +12,8 @@ import {
   loadOwnershipForms,
   loadPeopleCategories,
   loadPeoples,
-  toggleMarkerDisplay
+  toggleMarkerDisplay,
+  setRegionToDisplay
 } from 'redux/modules/map';
 
 const returnMarkerImg = (element) => {
@@ -26,12 +27,21 @@ const returnMarkerImg = (element) => {
   }
 };
 
+let currentCenter = {};
+
 const GettingStartedGoogleMap = withGoogleMap(props => (
   <GoogleMap
-    ref={props.onMapLoad}
     defaultZoom={8}
     defaultCenter={{ lat: 50.454090, lng: 30.524743 }}
     onClick={props.onMapClick}
+    ref={(map) => {
+      if (map) {
+        if (currentCenter !== props.mapCenter) {
+          map.panTo({ lat: Number(props.mapCenter.lat), lng: Number(props.mapCenter.lng) });
+        }
+        currentCenter = props.mapCenter;
+      }
+    }}
   >
     {props.markers.map((marker, index) => {
       const markerIcon = returnMarkerImg(marker.elementType);
@@ -41,28 +51,30 @@ const GettingStartedGoogleMap = withGoogleMap(props => (
       };
       const contractType = props.contractTypes.find(element => Number(element.id) === Number(marker.contract_type));
       const holder = props.holders.find(element => Number(element.id) === Number(marker.holder));
-      return (
-        <Marker
-          position={position}
-          onRightClick={() => props.onMarkerRightClick(marker.id)}
-          onClick={() => props.onMarkerClick(marker.id)}
-          icon={markerIcon}
-          key={`current-marker-${index}`}
-        >
-          {marker.showInfo && (
-            <InfoWindow onCloseClick={() => props.onMarkerClick(marker.id)}>
-              <div className="info-container">
-                <div className="name">{marker.name}</div>
-                <div className="description">{marker.description}</div>
-                <div className="holder"><div className="title">Власник:</div>{holder.title}</div>
-                <div className="contract-type"><div className="title">Тип контракту:</div>{contractType.title}</div>
-                <div className="price"><div className="title">Ціна:</div>{marker.price} грн.</div>
-                <div className="metrics"><div className="title">Площа:</div>{marker.metrics} м<sup>2</sup></div>
-              </div>
-            </InfoWindow>
-          )}
-        </Marker>
-      );
+      if (marker.region === props.regionToDisplay) {
+        return (
+          <Marker
+            position={position}
+            onRightClick={() => props.onMarkerRightClick(marker.id)}
+            onClick={() => props.onMarkerClick(marker.id)}
+            icon={markerIcon}
+            key={`current-marker-${index}`}
+          >
+            {marker.showInfo && (
+              <InfoWindow onCloseClick={() => props.onMarkerClick(marker.id)}>
+                <div className="info-container">
+                  <div className="name">{marker.name}</div>
+                  <div className="description">{marker.description}</div>
+                  <div className="holder"><div className="title">Власник:</div>{holder.title}</div>
+                  <div className="contract-type"><div className="title">Тип контракту:</div>{contractType.title}</div>
+                  <div className="price"><div className="title">Ціна:</div>{marker.price} грн.</div>
+                  <div className="metrics"><div className="title">Площа:</div>{marker.metrics} м<sup>2</sup></div>
+                </div>
+              </InfoWindow>
+            )}
+          </Marker>
+        );
+      }
     })}
     {props.polygons.map((polygon, index) => {
       return (
@@ -99,7 +111,9 @@ const GettingStartedGoogleMap = withGoogleMap(props => (
     holders: state.map.holders,
     ownershipForms: state.map.ownershipForms,
     peopleCategories: state.map.peopleCategories,
-    peoples: state.map.peoples
+    peoples: state.map.peoples,
+    mapCenter: state.map.mapCenter,
+    regionToDisplay: state.map.regionToDisplay,
   })
 )
 export default class Map extends Component {
@@ -111,7 +125,9 @@ export default class Map extends Component {
     holders: PropTypes.array,
     ownershipForms: PropTypes.array,
     peopleCategories: PropTypes.array,
-    peoples: PropTypes.array
+    peoples: PropTypes.array,
+    mapCenter: PropTypes.object,
+    regionToDisplay: PropTypes.number,
   };
 
   static contextTypes = {
@@ -126,35 +142,18 @@ export default class Map extends Component {
     holders: [],
     ownershipForms: [],
     peopleCategories: [],
-    peoples: []
+    peoples: [],
+    mapCenter: {},
+    regionToDisplay: null
   };
 
   constructor(props) {
     super(props);
     this.state = {
       someState: false,
+      displayRegionsList: true,
       markers: []
     };
-  }
-
-  componentWillMount() {
-    const markers = [{
-      position: {
-        lat: 50.454090,
-        lng: 30.524743,
-      },
-      key: `Kyiv`,
-      defaultAnimation: 2,
-      elementType: 1
-    }, {
-      position: {
-        lat: 50.753834709847816,
-        lng: 29.278564453125,
-      },
-      defaultAnimation: 2,
-      elementType: 2
-    }];
-    this.setState({ markers });
   }
 
   handleMapClicked(event) {
@@ -165,11 +164,12 @@ export default class Map extends Component {
   }
 
   render() {
-    const { regions, objects, categories, contractTypes, holders,
-      ownershipForms, peopleCategories, peoples } = this.props;
+    const { regions, objects, categories, contractTypes, holders, regionToDisplay,
+      ownershipForms, peopleCategories, peoples, mapCenter } = this.props;
     const dispatch = this.context.store.dispatch;
     const markersList = objects.filter(element => element.map_points.length === 1);
     const polygonsList = objects.filter(element => element.map_points.length !== 1);
+    console.log('mapCenter', mapCenter);
     require('./Map.scss');
     return (
       <div className="global-maps-container">
@@ -192,10 +192,27 @@ export default class Map extends Component {
             ownershipForms={ownershipForms}
             peopleCategories={peopleCategories}
             peoples={peoples}
+            mapCenter={mapCenter}
+            regionToDisplay={regionToDisplay}
             onMarkerClick={(index) => {
               dispatch(toggleMarkerDisplay(index));
             }}
           />
+        </div>
+        <div className="filters-container">
+          <div className="regions-list">
+            <div className="title">Список регіонів</div>
+            <div className="list">
+              {regions && regions.length !== 0 ? regions.map(element =>
+                <div
+                  className={`region-item ${element.id === regionToDisplay ? 'active' : ''}`}
+                  onClick={() => { dispatch(setRegionToDisplay(element.center_lat, element.center_lon, element.id)); }}
+                >
+                  {element.title}
+                </div>
+              ) : ''}
+            </div>
+          </div>
         </div>
       </div>
     );

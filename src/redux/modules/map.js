@@ -8,6 +8,7 @@ const LOAD_OWNERSHIP_FORMS_SUCCESS = 'redux-example/map/LOAD_OWNERSHIP_FORMS_SUC
 const LOAD_PEOPLE_CATEGORIES_SUCCESS = 'redux-example/map/LOAD_PEOPLE_CATEGORIES_SUCCESS';
 const LOAD_PEOPLES_SUCCESS = 'redux-example/map/LOAD_PEOPLES_SUCCESS';
 const TOGGLE_MARKER_DISPLAY = 'redux-example/map/TOGGLE_MARKER_DISPLAY';
+const SET_REGION_TO_DISPLAY = 'redux-example/map/SET_REGION_TO_DISPLAY';
 const LOAD_FAIL = 'redux-example/map/LOAD_FAIL';
 
 const initialState = {
@@ -20,7 +21,9 @@ const initialState = {
   holders: [],
   ownershipForms: [],
   peopleCategories: [],
-  peoples: []
+  peoples: [],
+  mapCenter: { lat: 50.454090, lng: 30.524743 },
+  regionToDisplay: 1
 };
 
 export default function reducer(state = initialState, action = {}) {
@@ -103,6 +106,12 @@ export default function reducer(state = initialState, action = {}) {
         objects: objectsList
       };
     }
+    case SET_REGION_TO_DISPLAY:
+      return {
+        ...state,
+        mapCenter: { lat: action.lat, lng: action.lng },
+        regionToDisplay: action.regionToDisplay
+      };
     default:
       return state;
   }
@@ -174,3 +183,13 @@ export function toggleMarkerDisplay(id) {
     id
   };
 }
+
+export function setRegionToDisplay(lat, lng, regionToDisplay) {
+  return {
+    type: SET_REGION_TO_DISPLAY,
+    lat,
+    lng,
+    regionToDisplay
+  };
+}
+
