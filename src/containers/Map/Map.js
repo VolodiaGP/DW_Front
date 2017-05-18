@@ -1,6 +1,6 @@
-import React, {Component} from 'react';
+import React, {Component, PropTypes} from 'react';
 import Helmet from 'react-helmet';
-import { withGoogleMap, GoogleMap, Marker, Polygon } from 'react-google-maps';
+import { withGoogleMap, GoogleMap, Marker, Polygon, InfoWindow } from 'react-google-maps';
 import { asyncConnect } from 'redux-connect';
 import { connect } from 'react-redux';
 import {
@@ -11,7 +11,8 @@ import {
   loadHolders,
   loadOwnershipForms,
   loadPeopleCategories,
-  loadPeoples
+  loadPeoples,
+  toggleMarkerDisplay
 } from 'redux/modules/map';
 
 const returnMarkerImg = (element) => {
@@ -34,16 +35,42 @@ const GettingStartedGoogleMap = withGoogleMap(props => (
   >
     {props.markers.map((marker, index) => {
       const markerIcon = returnMarkerImg(marker.elementType);
+      const position = {
+        lat: Number(marker.map_points[0].map_lat),
+        lng: Number(marker.map_points[0].map_lon)
+      };
+      const contractType = props.contractTypes.find(element => Number(element.id) === Number(marker.contract_type));
+      const holder = props.holders.find(element => Number(element.id) === Number(marker.holder));
       return (
         <Marker
-          {...marker}
-          onRightClick={() => props.onMarkerRightClick(index)}
-          onClick={() => props.onMarkerClick(index)}
+          position={position}
+          onRightClick={() => props.onMarkerRightClick(marker.id)}
+          onClick={() => props.onMarkerClick(marker.id)}
           icon={markerIcon}
+          key={`current-marker-${index}`}
+        >
+          {marker.showInfo && (
+            <InfoWindow onCloseClick={() => props.onMarkerClick(marker.id)}>
+              <div className="info-container">
+                <div className="name">{marker.name}</div>
+                <div className="description">{marker.description}</div>
+                <div className="holder"><div className="title">Власник:</div>{holder.title}</div>
+                <div className="contract-type"><div className="title">Тип контракту:</div>{contractType.title}</div>
+                <div className="price"><div className="title">Ціна:</div>{marker.price} грн.</div>
+                <div className="metrics"><div className="title">Площа:</div>{marker.metrics} м<sup>2</sup></div>
+              </div>
+            </InfoWindow>
+          )}
+        </Marker>
+      );
+    })}
+    {props.polygons.map((polygon, index) => {
+      return (
+        <Polygon
+          onClick={(event) => { console.log('polygon', event, 'index = ', index); }}
         />
       );
     })}
-    <Polygon paths={props.coords} onClick={(event) => { console.log('polygon', event); }} />
   </GoogleMap>
 ));
 
@@ -76,6 +103,32 @@ const GettingStartedGoogleMap = withGoogleMap(props => (
   })
 )
 export default class Map extends Component {
+  static propTypes = {
+    regions: PropTypes.array,
+    objects: PropTypes.array,
+    categories: PropTypes.array,
+    contractTypes: PropTypes.array,
+    holders: PropTypes.array,
+    ownershipForms: PropTypes.array,
+    peopleCategories: PropTypes.array,
+    peoples: PropTypes.array
+  };
+
+  static contextTypes = {
+    store: PropTypes.object.isRequired
+  };
+
+  static defaultProps = {
+    regions: [],
+    objects: [],
+    categories: [],
+    contractTypes: [],
+    holders: [],
+    ownershipForms: [],
+    peopleCategories: [],
+    peoples: []
+  };
+
   constructor(props) {
     super(props);
     this.state = {
@@ -112,17 +165,15 @@ export default class Map extends Component {
   }
 
   render() {
-    const { markers } = this.state;
-    const coords = [
-      { lat: 50.477390305021146, lng: 30.47607421875 },
-      { lat: 49.7315809334801, lng: 31.036376953125 },
-      { lat: 50.771207831887835, lng: 31.4813232421875 }
-    ];
+    const { regions, objects, categories, contractTypes, holders,
+      ownershipForms, peopleCategories, peoples } = this.props;
+    const dispatch = this.context.store.dispatch;
+    const markersList = objects.filter(element => element.map_points.length === 1);
+    const polygonsList = objects.filter(element => element.map_points.length !== 1);
     require('./Map.scss');
     return (
       <div className="global-maps-container">
         <Helmet title="Region info"/>
-        <div className="das">MAP</div>
         <div className="map-container">
           <GettingStartedGoogleMap
             containerElement={
@@ -131,14 +182,18 @@ export default class Map extends Component {
             mapElement={
               <div style={{ height: `100%` }} />
             }
-            onMapLoad={() => { console.log('mapLoaded'); }}
             onMapClick={(event) => { this.handleMapClicked(event); }}
-            markers={markers}
-            coords={coords}
-            onMarkerRightClick={() => { console.log('onMarkerRightClick'); }}
+            markers={markersList}
+            polygons={polygonsList}
+            regions={regions}
+            categories={categories}
+            contractTypes={contractTypes}
+            holders={holders}
+            ownershipForms={ownershipForms}
+            peopleCategories={peopleCategories}
+            peoples={peoples}
             onMarkerClick={(index) => {
-              console.log('onMarkerClcik', index); markers[0].elementType = 2;
-              this.setState({ someState: !this.state.someState });
+              dispatch(toggleMarkerDisplay(index));
             }}
           />
         </div>

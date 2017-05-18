@@ -4,6 +4,21 @@
     .map-container {
       width: 80%;
       height: 80vh;
+      .info-container {
+        width: 250px;
+        .name {
+          font-size: 14px;
+          font-weight: 500;
+          text-decoration: underline;
+          margin-bottom: 5px;
+        }
+        .title {
+          font-weight: 500;
+          display: inline-block;
+          margin-right: 10px;
+          margin-top: 5px;
+        }
+      }
     }
   }
 }

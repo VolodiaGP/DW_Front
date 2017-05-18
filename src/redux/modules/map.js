@@ -7,6 +7,7 @@ const LOAD_HOLDERS_SUCCESS = 'redux-example/map/LOAD_HOLDERS_SUCCESS';
 const LOAD_OWNERSHIP_FORMS_SUCCESS = 'redux-example/map/LOAD_OWNERSHIP_FORMS_SUCCESS';
 const LOAD_PEOPLE_CATEGORIES_SUCCESS = 'redux-example/map/LOAD_PEOPLE_CATEGORIES_SUCCESS';
 const LOAD_PEOPLES_SUCCESS = 'redux-example/map/LOAD_PEOPLES_SUCCESS';
+const TOGGLE_MARKER_DISPLAY = 'redux-example/map/TOGGLE_MARKER_DISPLAY';
 const LOAD_FAIL = 'redux-example/map/LOAD_FAIL';
 
 const initialState = {
@@ -36,13 +37,15 @@ export default function reducer(state = initialState, action = {}) {
         loaded: true,
         regions: action.result
       };
-    case LOAD_OBJECTS_SUCCESS:
+    case LOAD_OBJECTS_SUCCESS: {
+      const objectsList = action.result.map(element => ({...element, showInfo: 0}));
       return {
         ...state,
         loading: false,
         loaded: true,
-        objects: action.result
+        objects: objectsList
       };
+    }
     case LOAD_CATEGOIRES_SUCCESS:
       return {
         ...state,
@@ -90,6 +93,16 @@ export default function reducer(state = initialState, action = {}) {
         ...state,
         data: null
       };
+    case TOGGLE_MARKER_DISPLAY: {
+      const markerId = action.id;
+      const objectsList = [...state.objects];
+      const markerObject = objectsList.find(element => element.id === markerId);
+      markerObject.showInfo = markerObject.showInfo === 1 ? 0 : 1;
+      return {
+        ...state,
+        objects: objectsList
+      };
+    }
     default:
       return state;
   }
@@ -152,5 +165,12 @@ export function loadPeoples() {
   return {
     types: [LOAD, LOAD_PEOPLES_SUCCESS, LOAD_FAIL],
     promise: (client) => client.get('http://127.0.0.1:8000/api/peoples/')
+  };
+}
+
+export function toggleMarkerDisplay(id) {
+  return {
+    type: TOGGLE_MARKER_DISPLAY,
+    id
   };
 }
