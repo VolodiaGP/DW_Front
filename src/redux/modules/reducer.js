@@ -10,6 +10,7 @@ import { reducer as formReducer } from 'redux-form';
 import info from './info';
 import widgets from './widgets';
 import modal from './modal';
+import map from './map';
 
 export default combineReducers({
   routing: routerReducer,
@@ -17,6 +18,7 @@ export default combineReducers({
   auth,
   form: formReducer,
   modal,
+  map,
   multireducer: multireducer({
     counter1: counter,
     counter2: counter,
