@@ -78,11 +78,16 @@ const GettingStartedGoogleMap = withGoogleMap(props => (
       }
     })}
     {props.polygons.map((polygon, index) => {
-      return (
-        <Polygon
-          onClick={(event) => { console.log('polygon', event, 'index = ', index); }}
-        />
-      );
+      console.log('polygons', polygon);
+      const path = polygon.map_points.map(point => ({ lat: Number(point.map_lat), lng: Number(point.map_lon) }));
+      console.log('path', path);
+      if (polygon.region === props.regionToDisplay && props.categoriesToDisplay.includes(polygon.category)) {
+        return (
+          <Polygon
+            paths={path} onClick={(event) => { console.log('polygon', event, 'index = ', index); }}
+          />
+        );
+      }
     })}
   </GoogleMap>
 ));
