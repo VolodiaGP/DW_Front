@@ -1,48 +1,40 @@
-const LOAD = 'redux-example/auth/LOAD';
-const LOAD_SUCCESS = 'redux-example/auth/LOAD_SUCCESS';
-const LOAD_FAIL = 'redux-example/auth/LOAD_FAIL';
+import reactCookie from 'react-cookie';
+
 const LOGIN = 'redux-example/auth/LOGIN';
 const LOGIN_SUCCESS = 'redux-example/auth/LOGIN_SUCCESS';
+const LOGIN_SUCCESS_FROM_COOKIE = 'redux-example/auth/LOGIN_SUCCESS_FROM_COOKIE';
 const LOGIN_FAIL = 'redux-example/auth/LOGIN_FAIL';
 const LOGOUT = 'redux-example/auth/LOGOUT';
 const LOGOUT_SUCCESS = 'redux-example/auth/LOGOUT_SUCCESS';
 const LOGOUT_FAIL = 'redux-example/auth/LOGOUT_FAIL';
 
 const initialState = {
-  loaded: false
+  loggingIn: false,
+  loggedIn: false,
+  token: null
 };
 
 export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
-    case LOAD:
-      return {
-        ...state,
-        loading: true
-      };
-    case LOAD_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        loaded: true,
-        user: action.result
-      };
-    case LOAD_FAIL:
-      return {
-        ...state,
-        loading: false,
-        loaded: false,
-        error: action.error
-      };
     case LOGIN:
       return {
         ...state,
         loggingIn: true
       };
     case LOGIN_SUCCESS:
+      reactCookie.save('token', action.result.token, { path: '/', maxAge: 36000000 });
       return {
         ...state,
         loggingIn: false,
-        user: action.result
+        token: action.result,
+        loggedIn: true
+      };
+    case LOGIN_SUCCESS_FROM_COOKIE:
+      return {
+        ...state,
+        loggingIn: false,
+        token: action.token,
+        loggedIn: true
       };
     case LOGIN_FAIL:
       return {
@@ -59,8 +51,9 @@ export default function reducer(state = initialState, action = {}) {
     case LOGOUT_SUCCESS:
       return {
         ...state,
-        loggingOut: false,
-        user: null
+        loggingIn: false,
+        token: null,
+        loggedIn: false
       };
     case LOGOUT_FAIL:
       return {
@@ -77,27 +70,29 @@ export function isLoaded(globalState) {
   return globalState.auth && globalState.auth.loaded;
 }
 
-export function load() {
+export function loginFromCookie() {
+  const savedToken = reactCookie.load('token');
   return {
-    types: [LOAD, LOAD_SUCCESS, LOAD_FAIL],
-    promise: (client) => client.get('/loadAuth')
+    type: LOGIN_SUCCESS_FROM_COOKIE,
+    token: savedToken
   };
 }
 
-export function login(name) {
+export function login(username, password) {
   return {
     types: [LOGIN, LOGIN_SUCCESS, LOGIN_FAIL],
-    promise: (client) => client.post('/login', {
+    promise: (client) => client.post('http://127.0.0.1:8000/auth/token', {
       data: {
-        name: name
+        'username': username,
+        'password': password
       }
     })
   };
 }
 
 export function logout() {
+  reactCookie.remove('token');
   return {
-    types: [LOGOUT, LOGOUT_SUCCESS, LOGOUT_FAIL],
-    promise: (client) => client.get('/logout')
+    type: LOGOUT_SUCCESS
   };
 }

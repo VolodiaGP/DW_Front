@@ -6,34 +6,28 @@ import Navbar from 'react-bootstrap/lib/Navbar';
 import Nav from 'react-bootstrap/lib/Nav';
 import NavItem from 'react-bootstrap/lib/NavItem';
 import Helmet from 'react-helmet';
-import { isLoaded as isInfoLoaded, load as loadInfo } from 'redux/modules/info';
-import { isLoaded as isAuthLoaded, load as loadAuth, logout } from 'redux/modules/auth';
 import { push } from 'react-router-redux';
 import config from '../../config';
 import { asyncConnect } from 'redux-async-connect';
+import { loginFromCookie, logout } from 'redux/modules/auth';
 import ModalWindow from '../../components/ModalWindows/ModalWindow';
 
 @asyncConnect([{
-  promise: ({store: {dispatch, getState}}) => {
+  promise: ({ store: { dispatch, getState }}) => {
     const promises = [];
-
-    if (!isInfoLoaded(getState())) {
-      promises.push(dispatch(loadInfo()));
+    if (!getState().auth.token) {
+      promises.push(dispatch(loginFromCookie()));
     }
-    if (!isAuthLoaded(getState())) {
-      promises.push(dispatch(loadAuth()));
-    }
-
     return Promise.all(promises);
   }
 }])
 @connect(
-  state => ({user: state.auth.user}),
-  {logout, pushState: push})
+  state => ({auth: state.auth}),
+  { pushState: push})
 export default class App extends Component {
   static propTypes = {
     children: PropTypes.object.isRequired,
-    user: PropTypes.object,
+    auth: PropTypes.object,
     logout: PropTypes.func.isRequired,
     pushState: PropTypes.func.isRequired
   };
@@ -42,25 +36,25 @@ export default class App extends Component {
     store: PropTypes.object.isRequired
   };
 
-  componentWillReceiveProps(nextProps) {
-    if (!this.props.user && nextProps.user) {
-      // login
-      this.props.pushState('/loginSuccess');
-    } else if (this.props.user && !nextProps.user) {
-      // logout
-      this.props.pushState('/');
-    }
-  }
+  // componentWillReceiveProps(nextProps) {
+    // if (!this.props.user && nextProps.user) {
+    //   // login
+    //   this.props.pushState('/loginSuccess');
+    // } else if (this.props.user && !nextProps.user) {
+    //   // logout
+    //   this.props.pushState('/');
+    // }
+  // }
 
   handleLogout = (event) => {
     event.preventDefault();
-    this.props.logout();
+    // this.props.logout();
   };
 
   render() {
-    const {user} = this.props;
+    const {auth} = this.props;
     const styles = require('./App.scss');
-
+    const dispatch = this.context.store.dispatch;
     return (
       <div className="global-application-container">
         <ModalWindow />
@@ -78,36 +72,24 @@ export default class App extends Component {
 
           <Navbar.Collapse eventKey={0}>
             <Nav navbar>
-              {user && <LinkContainer to="/chat">
-                <NavItem eventKey={1}>Chat</NavItem>
-              </LinkContainer>}
-
-              <LinkContainer to="/widgets">
-                <NavItem eventKey={2}>Widgets</NavItem>
-              </LinkContainer>
-              <LinkContainer to="/survey">
-                <NavItem eventKey={3}>Survey</NavItem>
-              </LinkContainer>
-              <LinkContainer to="/pagination">
-                <NavItem eventKey={4}>Pagination</NavItem>
-              </LinkContainer>
               <LinkContainer to="/about">
-                <NavItem eventKey={5}>About Us</NavItem>
+                <NavItem eventKey={5}>Про нас</NavItem>
               </LinkContainer>
 
-              {!user &&
+              {!auth.token &&
               <LinkContainer to="/login">
-                <NavItem eventKey={6}>Login</NavItem>
+                <NavItem eventKey={6}>Вхід</NavItem>
               </LinkContainer>}
-              {user &&
+              {auth.token &&
               <LinkContainer to="/logout">
-                <NavItem eventKey={7} className="logout-link" onClick={this.handleLogout}>
-                  Logout
+                <NavItem eventKey={7} className="logout-link" onClick={() => { dispatch(logout()); }}>
+                  Вихід
                 </NavItem>
               </LinkContainer>}
             </Nav>
-            {user &&
-            <p className={styles.loggedInMessage + ' navbar-text'}>Logged in as <strong>{user.name}</strong>.</p>}
+            {auth && auth.token &&
+              <p className={styles.loggedInMessage + ' navbar-text'}>Ввійшли, як <strong>Адмін</strong>.</p>
+            }
             <Nav navbar pullRight>
               <NavItem eventKey={1} target="_blank" title="View on Github" href="https://github.com/erikras/react-redux-universal-hot-example">
                 <i className="fa fa-github"/>
