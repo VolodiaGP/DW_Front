@@ -221,14 +221,16 @@ export default class Map extends Component {
           <div className="categories-list">
             <div className="title">Категорії об'єктів</div>
             <div className="list">
-              {categories && categories.length !== 0 ? categories.map(element =>
-                <div
-                  className={`category-item ${categoriesToDisplay && categoriesToDisplay.length !== 0 &&
-                   categoriesToDisplay.includes(element.id) ? 'active' : ''}`}
-                  onClick={() => { dispatch(setCategoriesToDisplay(element.id)); }}
-                >
-                  {element.title}
-                </div>
+              {categories && categories.length !== 0 ?
+                categories.filter(element => objects.filter(object => object.category === element.id
+                  && object.region === regionToDisplay).length !== 0).map(element =>
+                    <div
+                      className={`category-item ${categoriesToDisplay && categoriesToDisplay.length !== 0 &&
+                       categoriesToDisplay.includes(element.id) ? 'active' : ''}`}
+                      onClick={() => { dispatch(setCategoriesToDisplay(element.id)); }}
+                    >
+                      {element.title}
+                    </div>
               ) : ''}
             </div>
           </div>
