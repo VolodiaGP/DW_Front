@@ -18,17 +18,6 @@ import {
   setPeopleCategoriesToDisplay
 } from 'redux/modules/map';
 
-const returnMarkerImg = (element) => {
-  switch (element) {
-    case 1:
-      return 'http://maps.google.com/mapfiles/kml/paddle/blu-diamond.png';
-    case 2:
-      return 'http://www.myiconfinder.com/uploads/iconsets/128-128-a4c7ca66f18a996590e6d440bf29c0fa.png';
-    default:
-      break;
-  }
-};
-
 let currentCenter = {};
 
 const GettingStartedGoogleMap = withGoogleMap(props => (
@@ -46,7 +35,6 @@ const GettingStartedGoogleMap = withGoogleMap(props => (
     }}
   >
     {props.markers.map((marker, index) => {
-      const markerIcon = returnMarkerImg(marker.elementType);
       const position = {
         lat: Number(marker.map_points[0].map_lat),
         lng: Number(marker.map_points[0].map_lon)
@@ -54,12 +42,17 @@ const GettingStartedGoogleMap = withGoogleMap(props => (
       const contractType = props.contractTypes.find(element => Number(element.id) === Number(marker.contract_type));
       const holder = props.holders.find(element => Number(element.id) === Number(marker.holder));
       if (marker.region === props.regionToDisplay && props.categoriesToDisplay.includes(marker.category)) {
+        const iconElement = {
+          url: props.categories.find(category => category.id === marker.category).img_small,
+          // scaledSize: props.google.maps.ize(36, 36)
+        };
+        console.log('iconElement.marker_picture', iconElement);
         return (
           <Marker
             position={position}
             onRightClick={() => props.onMarkerRightClick(marker.id)}
             onClick={() => props.onMarkerClick(marker.id)}
-            icon={markerIcon}
+            icon={iconElement}
             key={`current-marker-${index}`}
           >
             {marker.showInfo && (
@@ -247,6 +240,9 @@ export default class Map extends Component {
                        categoriesToDisplay.includes(element.id) ? 'active' : ''}`}
                       onClick={() => { dispatch(setCategoriesToDisplay(element.id)); }}
                     >
+                      <div className="image-place">
+                        <img src={element.marker_picture} />
+                      </div>
                       {element.title}
                     </div>
               ) : ''}
