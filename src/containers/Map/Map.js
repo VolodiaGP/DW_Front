@@ -13,7 +13,8 @@ import {
   loadPeopleCategories,
   loadPeoples,
   toggleMarkerDisplay,
-  setRegionToDisplay
+  setRegionToDisplay,
+  setCategoriesToDisplay
 } from 'redux/modules/map';
 
 const returnMarkerImg = (element) => {
@@ -51,7 +52,7 @@ const GettingStartedGoogleMap = withGoogleMap(props => (
       };
       const contractType = props.contractTypes.find(element => Number(element.id) === Number(marker.contract_type));
       const holder = props.holders.find(element => Number(element.id) === Number(marker.holder));
-      if (marker.region === props.regionToDisplay) {
+      if (marker.region === props.regionToDisplay && props.categoriesToDisplay.includes(marker.category)) {
         return (
           <Marker
             position={position}
@@ -114,6 +115,7 @@ const GettingStartedGoogleMap = withGoogleMap(props => (
     peoples: state.map.peoples,
     mapCenter: state.map.mapCenter,
     regionToDisplay: state.map.regionToDisplay,
+    categoriesToDisplay: state.map.categoriesToDisplay,
   })
 )
 export default class Map extends Component {
@@ -128,6 +130,7 @@ export default class Map extends Component {
     peoples: PropTypes.array,
     mapCenter: PropTypes.object,
     regionToDisplay: PropTypes.number,
+    categoriesToDisplay: PropTypes.array,
   };
 
   static contextTypes = {
@@ -144,7 +147,8 @@ export default class Map extends Component {
     peopleCategories: [],
     peoples: [],
     mapCenter: {},
-    regionToDisplay: null
+    regionToDisplay: null,
+    categoriesToDisplay: {},
   };
 
   constructor(props) {
@@ -164,7 +168,7 @@ export default class Map extends Component {
   }
 
   render() {
-    const { regions, objects, categories, contractTypes, holders, regionToDisplay,
+    const { regions, objects, categories, contractTypes, holders, regionToDisplay, categoriesToDisplay,
       ownershipForms, peopleCategories, peoples, mapCenter } = this.props;
     const dispatch = this.context.store.dispatch;
     const markersList = objects.filter(element => element.map_points.length === 1);
@@ -194,6 +198,7 @@ export default class Map extends Component {
             peoples={peoples}
             mapCenter={mapCenter}
             regionToDisplay={regionToDisplay}
+            categoriesToDisplay={categoriesToDisplay}
             onMarkerClick={(index) => {
               dispatch(toggleMarkerDisplay(index));
             }}
@@ -207,6 +212,20 @@ export default class Map extends Component {
                 <div
                   className={`region-item ${element.id === regionToDisplay ? 'active' : ''}`}
                   onClick={() => { dispatch(setRegionToDisplay(element.center_lat, element.center_lon, element.id)); }}
+                >
+                  {element.title}
+                </div>
+              ) : ''}
+            </div>
+          </div>
+          <div className="categories-list">
+            <div className="title">Категорії об'єктів</div>
+            <div className="list">
+              {categories && categories.length !== 0 ? categories.map(element =>
+                <div
+                  className={`category-item ${categoriesToDisplay && categoriesToDisplay.length !== 0 &&
+                   categoriesToDisplay.includes(element.id) ? 'active' : ''}`}
+                  onClick={() => { dispatch(setCategoriesToDisplay(element.id)); }}
                 >
                   {element.title}
                 </div>

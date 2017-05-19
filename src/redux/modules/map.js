@@ -9,6 +9,7 @@ const LOAD_PEOPLE_CATEGORIES_SUCCESS = 'redux-example/map/LOAD_PEOPLE_CATEGORIES
 const LOAD_PEOPLES_SUCCESS = 'redux-example/map/LOAD_PEOPLES_SUCCESS';
 const TOGGLE_MARKER_DISPLAY = 'redux-example/map/TOGGLE_MARKER_DISPLAY';
 const SET_REGION_TO_DISPLAY = 'redux-example/map/SET_REGION_TO_DISPLAY';
+const SET_CATEGORIES_TO_DISPLAY = 'redux-example/map/SET_CATEGORIES_TO_DISPLAY';
 const LOAD_FAIL = 'redux-example/map/LOAD_FAIL';
 
 const initialState = {
@@ -23,7 +24,8 @@ const initialState = {
   peopleCategories: [],
   peoples: [],
   mapCenter: { lat: 50.454090, lng: 30.524743 },
-  regionToDisplay: 1
+  regionToDisplay: 1,
+  categoriesToDisplay: []
 };
 
 export default function reducer(state = initialState, action = {}) {
@@ -112,6 +114,16 @@ export default function reducer(state = initialState, action = {}) {
         mapCenter: { lat: action.lat, lng: action.lng },
         regionToDisplay: action.regionToDisplay
       };
+    case SET_CATEGORIES_TO_DISPLAY:
+      const currentCategories = [...state.categoriesToDisplay];
+      const categoryId = action.categoryId;
+      const categoriesArray = currentCategories.includes(categoryId) ?
+        currentCategories.filter(element => element !== categoryId) :
+        [...currentCategories, categoryId];
+      return {
+        ...state,
+        categoriesToDisplay: categoriesArray
+      };
     default:
       return state;
   }
@@ -190,6 +202,13 @@ export function setRegionToDisplay(lat, lng, regionToDisplay) {
     lat,
     lng,
     regionToDisplay
+  };
+}
+
+export function setCategoriesToDisplay(categoryId) {
+  return {
+    type: SET_CATEGORIES_TO_DISPLAY,
+    categoryId
   };
 }
 
