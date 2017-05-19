@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import Helmet from 'react-helmet';
-import { withGoogleMap, GoogleMap, Marker, Polygon, InfoWindow } from 'react-google-maps';
+import { withGoogleMap, GoogleMap, Marker, Polygon, InfoWindow, Circle } from 'react-google-maps';
 import { asyncConnect } from 'redux-connect';
 import { connect } from 'react-redux';
 import {
@@ -14,7 +14,8 @@ import {
   loadPeoples,
   toggleMarkerDisplay,
   setRegionToDisplay,
-  setCategoriesToDisplay
+  setCategoriesToDisplay,
+  setPeopleCategoriesToDisplay
 } from 'redux/modules/map';
 
 const returnMarkerImg = (element) => {
@@ -89,6 +90,14 @@ const GettingStartedGoogleMap = withGoogleMap(props => (
         );
       }
     })}
+    {props.peoples.map((people) => {
+      const position = ({ lat: Number(people.map_lat), lng: Number(people.map_lon) });
+      if (people.region === props.regionToDisplay && props.peopleCategoriesToDisplay.includes(people.category)) {
+        return (
+          <Circle radius={300} center={position} fillColor={'red'} />
+        );
+      }
+    })}
   </GoogleMap>
 ));
 
@@ -121,6 +130,7 @@ const GettingStartedGoogleMap = withGoogleMap(props => (
     mapCenter: state.map.mapCenter,
     regionToDisplay: state.map.regionToDisplay,
     categoriesToDisplay: state.map.categoriesToDisplay,
+    peopleCategoriesToDisplay: state.map.peopleCategoriesToDisplay,
   })
 )
 export default class Map extends Component {
@@ -136,6 +146,7 @@ export default class Map extends Component {
     mapCenter: PropTypes.object,
     regionToDisplay: PropTypes.number,
     categoriesToDisplay: PropTypes.array,
+    peopleCategoriesToDisplay: PropTypes.array,
   };
 
   static contextTypes = {
@@ -153,7 +164,8 @@ export default class Map extends Component {
     peoples: [],
     mapCenter: {},
     regionToDisplay: null,
-    categoriesToDisplay: {},
+    categoriesToDisplay: [],
+    peopleCategoriesToDisplay: [],
   };
 
   constructor(props) {
@@ -174,7 +186,7 @@ export default class Map extends Component {
 
   render() {
     const { regions, objects, categories, contractTypes, holders, regionToDisplay, categoriesToDisplay,
-      ownershipForms, peopleCategories, peoples, mapCenter } = this.props;
+      ownershipForms, peopleCategories, peoples, mapCenter, peopleCategoriesToDisplay } = this.props;
     const dispatch = this.context.store.dispatch;
     const markersList = objects.filter(element => element.map_points.length === 1);
     const polygonsList = objects.filter(element => element.map_points.length !== 1);
@@ -204,6 +216,7 @@ export default class Map extends Component {
             mapCenter={mapCenter}
             regionToDisplay={regionToDisplay}
             categoriesToDisplay={categoriesToDisplay}
+            peopleCategoriesToDisplay={peopleCategoriesToDisplay}
             onMarkerClick={(index) => {
               dispatch(toggleMarkerDisplay(index));
             }}
@@ -237,6 +250,23 @@ export default class Map extends Component {
                       {element.title}
                     </div>
               ) : ''}
+            </div>
+          </div>
+          <div className="people-categories-list">
+            <div className="title">Категорії людей</div>
+            <div className="list">
+              {peopleCategories && peopleCategories.length !== 0 ?
+                peopleCategories.filter(element => peoples.filter(people => people.category === element.id
+                && people.region === regionToDisplay).length !== 0).map(element =>
+                  <div
+                    className={`people-category-item ${peopleCategoriesToDisplay
+                      && peopleCategoriesToDisplay.length !== 0 &&
+                       peopleCategoriesToDisplay.includes(element.id) ? 'active' : ''}`}
+                    onClick={() => { dispatch(setPeopleCategoriesToDisplay(element.id)); }}
+                  >
+                    {element.title}
+                  </div>
+                ) : ''}
             </div>
           </div>
         </div>
