@@ -21,9 +21,29 @@ import {
 
 let currentCenter = {};
 
+const isInPolygon = (point, polygon) => {
+  const xPoint = point.lat;
+  const yPoint = point.lng;
+
+  let inside = false;
+  let first; let second; let intersect;
+  let xi; let xj; let yi; let yj;
+
+  for (first = 0, second = polygon.length - 1; first < polygon.length; second = first++) {
+    xi = polygon[first].lat; yi = polygon[first].lng;
+    xj = polygon[second].lat; yj = polygon[second].lng;
+
+    intersect = ((yi > yPoint) !== (yj > yPoint))
+      && (xPoint < (xj - xi) * (yPoint - yi) / (yj - yi) + xi);
+    if (intersect) inside = !inside;
+  }
+
+  return inside;
+};
+
 const GettingStartedGoogleMap = withGoogleMap(props => (
   <GoogleMap
-    defaultZoom={8}
+    defaultZoom={10}
     defaultCenter={{ lat: 50.454090, lng: 30.524743 }}
     onClick={props.onMapClick}
     ref={(map) => {
@@ -59,9 +79,7 @@ const GettingStartedGoogleMap = withGoogleMap(props => (
       if (marker.region === props.regionToDisplay && props.categoriesToDisplay.includes(marker.category)) {
         const iconElement = {
           url: props.categories.find(category => category.id === marker.category).img_small,
-          // scaledSize: props.google.maps.ize(36, 36)
         };
-        console.log('iconElement.marker_picture', iconElement);
         return (
           <Marker
             position={position}
@@ -87,9 +105,7 @@ const GettingStartedGoogleMap = withGoogleMap(props => (
       }
     })}
     {props.polygons.map((polygon, index) => {
-      console.log('polygons', polygon);
       const path = polygon.map_points.map(point => ({ lat: Number(point.map_lat), lng: Number(point.map_lon) }));
-      console.log('path', path);
       if (polygon.region === props.regionToDisplay && props.categoriesToDisplay.includes(polygon.category)) {
         return (
           <Polygon
@@ -108,6 +124,21 @@ const GettingStartedGoogleMap = withGoogleMap(props => (
     })}
     <DrawingManager
       onCircleComplete={(aa, bb, cc) => { console.log('a,b,c onCircleComplete', aa, bb, cc); }}
+      onMarkerComplete={(event) => {
+        const point = {
+          lat: event.position.lat(),
+          lng: event.position.lng()
+        };
+        const polygonPoints = props.regions.find(region => region.id === props.regionToDisplay).map_points.
+        map(element => ({
+          lat: Number(element.map_lat),
+          lng: Number(element.map_lon)
+        }));
+        console.log('isInPolygon', isInPolygon(point, polygonPoints));
+        if (!isInPolygon(point, polygonPoints)) {
+          event.setVisible(false);
+        }
+      }}
       onOverlayComplete={(aa, bb, cc) => { console.log('a,b,c onOverlayComplete', aa, bb, cc); }}
     />
   </GoogleMap>
