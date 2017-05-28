@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import Helmet from 'react-helmet';
 import { withGoogleMap, GoogleMap, Marker, Polygon, InfoWindow, Circle } from 'react-google-maps';
+import DrawingManager from 'react-google-maps/lib/drawing/DrawingManager';
 import { asyncConnect } from 'redux-connect';
 import { connect } from 'react-redux';
 import {
@@ -34,6 +35,20 @@ const GettingStartedGoogleMap = withGoogleMap(props => (
       }
     }}
   >
+    {props.regions.map((region) => {
+      const path = region.map_points.map(point => ({ lat: Number(point.map_lat), lng: Number(point.map_lon) }));
+      if (region.id === props.regionToDisplay) {
+        return (
+          <Polygon
+            paths={path} onClick={(event) => { console.log('polygon', event, 'index = '); }}
+            options={{
+              strokeWeight: '1',
+              fillColor: 'gray'
+            }}
+          />
+        );
+      }
+    })}
     {props.markers.map((marker, index) => {
       const position = {
         lat: Number(marker.map_points[0].map_lat),
@@ -91,6 +106,10 @@ const GettingStartedGoogleMap = withGoogleMap(props => (
         );
       }
     })}
+    <DrawingManager
+      onCircleComplete={(aa, bb, cc) => { console.log('a,b,c onCircleComplete', aa, bb, cc); }}
+      onOverlayComplete={(aa, bb, cc) => { console.log('a,b,c onOverlayComplete', aa, bb, cc); }}
+    />
   </GoogleMap>
 ));
 
