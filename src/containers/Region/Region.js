@@ -199,8 +199,27 @@ export default class Region extends Component {
     this.state = {
       isLightBoxOpen: false,
       isObjectsDisplay: false,
-      objectsCategorySelected: null
+      objectsCategorySelected: null,
+      objectSelected: null
     };
+  }
+
+  setObjectsFromCategoryToDisplay(categoryId) {
+    const { objectsCategorySelected } = this.state;
+    let category = categoryId;
+    if (objectsCategorySelected === categoryId) {
+      category = null;
+    }
+    this.setState({ objectsCategorySelected: category });
+  }
+
+  setObjectToDisplay(objectId) {
+    const { objectSelected } = this.state;
+    let object = objectId;
+    if (objectSelected === objectId) {
+      object = null;
+    }
+    this.setState({ objectSelected: object });
   }
 
   handleMapClicked(event) {
@@ -214,7 +233,7 @@ export default class Region extends Component {
     // const { regions, objects, categories, contractTypes, holders, regionToDisplay, categoriesToDisplay,
     //   ownershipForms, peopleCategories, peoples, mapCenter, peopleCategoriesToDisplay } = this.props;
     const { regions, objects, categories, params } = this.props;
-    const { isLightBoxOpen, isObjectsDisplay, objectsCategorySelected } = this.state;
+    const { isLightBoxOpen, isObjectsDisplay, objectsCategorySelected, objectSelected } = this.state;
     console.log('this.props', this.props);
     // const dispatch = this.context.store.dispatch;
     // const markersList = objects.filter(element => element.map_points.length === 1);
@@ -267,17 +286,32 @@ export default class Region extends Component {
                 && Number(obj.region) === Number(params.id)).length !== 0).map(category =>
                   <div className="category-item">
                     <div
-                      className="category-title"
+                      className={`category-title ${category.id === objectsCategorySelected ? 'active' : ''}`}
                       onClick={() => {
-                        this.setState({ objectsCategorySelected: category.id });
+                        this.setObjectsFromCategoryToDisplay(category.id);
                       }}
                     >
                       {category.title}
                     </div>
-                    <div className="category-item-list">
+                    <div className={`category-item-list ${objectsCategorySelected === category.id ? 'display' : ''}`}>
                       {objectsCategorySelected === category.id ? objects.filter(object => Number(object.region) === Number(params.id)
                         && object.category === objectsCategorySelected).map(item =>
-                          <div>{item.name}</div>
+                          <div className="current-object">
+                            <div
+                              className={`object-title ${objectSelected === item.id ? 'active' : ''}`}
+                              onClick={() => { this.setObjectToDisplay(item.id); }}
+                            >
+                              {item.name}
+                            </div>
+                            <div className={`object-description ${objectSelected === item.id ? 'display' : ''}`}>
+                              {item.id === objectSelected && objects && objects.length !== 0 ?
+                                objects.filter(object => object.id === objectSelected).map(currentObject =>
+                                  <div className="object-info">
+                                    {currentObject.description}
+                                  </div>
+                              ) : ''}
+                            </div>
+                          </div>
                       ) : ''}
                     </div>
                   </div>
