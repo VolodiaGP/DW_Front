@@ -1,0 +1,104 @@
+:global {
+  @import "../../containers/App/buttons";
+  .global-region-container {
+    padding: 66px 10px;
+    .region-description {
+      width: 100%;
+      display: flex;
+      .left-part {
+        width: 400px;
+        height: 300px;
+        .region-image {
+          width: 100%;
+          height: 260px;
+          img {
+            max-width: 100%;
+            max-height: 100%;
+            padding: 0px;
+            margin: 0px;
+          }
+          &:hover {
+            cursor: pointer;
+          }
+        }
+        .show-more {
+          color: #808080;
+          font-weight: bold;
+          font-size: 12px;
+          margin-top: 3px;
+          display: inline-block;
+          transition: background-color 0.5s, color 0.5s;
+          padding: 5px;
+          &:hover {
+            cursor: pointer;
+            background-color: #213460;
+            color: white;
+          }
+        }
+      }
+      .right-part {
+        margin-left: 20px;
+        width: calc(100% - 420px);
+        .region-title {
+          font-size: 20px;
+          font-weight: bold;
+          border-bottom: solid 2px;
+          margin-bottom: 10px;
+          letter-spacing: 0.7px;
+        }
+        .region-center {
+          margin-top: 10px;
+          span {
+            font-weight: bold;
+            margin-right: 10px;
+          }
+        }
+      }
+    }
+    .region-objects {
+      .title {
+        display: inline-block;
+        //border-bottom: solid 1px;
+        position: relative;
+        border: solid 1px;
+        padding: 5px 10px;
+        transition: font-weight 0.5s, width 0.5s;
+        box-sizing: border-box;
+        //&:after {
+        //  content: '\F0D7';
+        //  font-family: FontAwesome;
+        //  margin-left: 10px;
+        //  font-size: 21px;
+        //  position: absolute;
+        //  top: -5px;
+        //  transition: transform 0.5s;
+        //}
+        &:hover {
+          cursor: pointer;
+          color: #213460;
+          text-decoration: underline;
+        }
+      }
+      .title.to-top {
+        //font-weight: bold;
+        //&:after {
+        //  transform: rotate(-180deg);
+        //}
+      }
+      .objects-list {
+        max-height: 0px;
+        overflow: hidden;
+        margin: 10px 0px;
+        background: #eaeaea;
+        border: solid 0px;
+        padding: 0px;
+        transition: all 0.5s;
+      }
+      .objects-list.display {
+        max-height: 120px;
+        border: solid 1px;
+        padding: 10px;
+      }
+    }
+  }
+}

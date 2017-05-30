@@ -31,7 +31,7 @@
         font-size: 15px;
         letter-spacing: 1px;
         text-align: center;
-        background: #657fbb;
+        background: #303540;
         color: white;
         font-weight: bold;
         padding: 5px;
@@ -39,14 +39,14 @@
       .regions-list, .categories-list, .people-categories-list {
         .region-item, .category-item, .people-category-item {
           padding: 5px 20px;
-          background: #dbc9e6;
+          background-color: #eed5fd;
           border-bottom: solid 1px;
           &:hover {
             cursor: pointer;
-            background-color: #d4b0ea;
+            background-color: #cbc4d0;
           }
           &.active {
-            background-color: #d4b0ea;
+            background-color: #cbc4d0;
             font-weight: bold;
           }
           .image-place {
