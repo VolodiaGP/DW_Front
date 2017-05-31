@@ -19,6 +19,7 @@ import {
   // setPeopleCategoriesToDisplay
 } from 'redux/modules/map';
 import Lightbox from 'react-image-lightbox';
+import CalculateInvestmentForm from './CalculateInvestmentForm';
 // import isInPolygon from '../../helpers/isInPolygon';
 
 // let currentCenter = {};
@@ -199,6 +200,7 @@ export default class Region extends Component {
     this.state = {
       isLightBoxOpen: false,
       isObjectsDisplay: false,
+      isInvestmentFormDisplay: false,
       isPeoplesObjectsDisplay: false,
       objectsCategorySelected: null,
       peoplesCategorySelected: null,
@@ -255,7 +257,7 @@ export default class Region extends Component {
     //   ownershipForms, peopleCategories, peoples, mapCenter, peopleCategoriesToDisplay } = this.props;
     const { regions, objects, categories, peopleCategories, peoples, params } = this.props;
     const { isLightBoxOpen, isObjectsDisplay, objectsCategorySelected, peoplesCategorySelected,
-      objectSelected, peopleSelected, isPeoplesObjectsDisplay } = this.state;
+      objectSelected, peopleSelected, isPeoplesObjectsDisplay, isInvestmentFormDisplay } = this.state;
     console.log('this.props', this.props);
     // const dispatch = this.context.store.dispatch;
     // const markersList = objects.filter(element => element.map_points.length === 1);
@@ -384,6 +386,22 @@ export default class Region extends Component {
               </div>
             ) : ''}
           </div>
+        </div>
+        <div className="input-form">
+          <div
+            className="title"
+            onClick={() => { this.setState({ isInvestmentFormDisplay: !isInvestmentFormDisplay }); }}
+          >
+            Визначення найкращого капіталовкладення
+          </div>
+          <CalculateInvestmentForm
+            display={isInvestmentFormDisplay}
+            categoriesList={categories && categories.length !== 0 ? categories.filter(category =>
+              objects.filter(obj => obj.category === category.id
+                && Number(obj.region) === Number(params.id)).length !== 0) : []}
+            markers={objects}
+            currentRegion={regions.filter(region => Number(region.id) === Number(params.id))}
+          />
         </div>
       </div>
     );

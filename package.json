@@ -103,6 +103,7 @@
     "babel-register": "^6.3.13",
     "babel-runtime": "^6.3.19",
     "body-parser": "^1.14.1",
+    "chart.js": "^1.1.1",
     "compression": "^1.6.0",
     "express": "^4.13.3",
     "express-session": "^1.12.1",
@@ -120,6 +121,7 @@
     "pretty-error": "^1.2.0",
     "react": "15.4.2",
     "react-bootstrap": "^0.28.1",
+    "react-chartjs": "^0.8.0",
     "react-cookie": "^1.0.4",
     "react-dom": "15.4.2",
     "react-google-maps": "^6.3.0",
@@ -143,6 +145,7 @@
     "socket.io-client": "^1.3.7",
     "superagent": "^1.4.0",
     "url-loader": "^0.5.7",
+    "victory": "^0.20.0",
     "violet-paginator": "^1.8.1",
     "warning": "^2.1.0",
     "webpack-isomorphic-tools": "^2.2.18"
