@@ -18,5 +18,24 @@ nav {
     font-size: 2em;
     line-height: 20px;
   }
+  .search-field {
+    input {
+      height: 25px;
+      padding: 5px 10px;
+      color: black;
+      width: 300px;
+      font-size: 14px;
+      background: lightblue;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+    i {
+      position: absolute;
+      font-size: 17px;
+      top: 17px;
+      right: 22px;
+      color: black;
+    }
+  }
 }
 

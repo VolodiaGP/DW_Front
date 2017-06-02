@@ -91,6 +91,10 @@ const GettingStartedGoogleMap = withGoogleMap(props => (
         return (
           <Polygon
             paths={path} onClick={(event) => { console.log('polygon', event, 'index = ', index); }}
+            options={{
+              strokeWeight: '1',
+              fillColor: 'gray'
+            }}
           />
         );
       }
@@ -99,7 +103,15 @@ const GettingStartedGoogleMap = withGoogleMap(props => (
       const position = ({ lat: Number(people.map_lat), lng: Number(people.map_lon) });
       if (people.region === props.regionToDisplay && props.peopleCategoriesToDisplay.includes(people.category)) {
         return (
-          <Circle radius={300} center={position} fillColor={'red'} />
+          <Circle
+            radius={1000}
+            center={position}
+            fillColor={'red'}
+            options={{
+              strokeWeight: '1',
+              fillColor: 'red'
+            }}
+          />
         );
       }
     })}

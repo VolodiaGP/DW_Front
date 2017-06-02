@@ -91,8 +91,11 @@ export default class App extends Component {
               <p className={styles.loggedInMessage + ' navbar-text'}>Ввійшли, як <strong>Адмін</strong>.</p>
             }
             <Nav navbar pullRight>
-              <NavItem eventKey={1} target="_blank" title="View on Github" href="https://github.com/erikras/react-redux-universal-hot-example">
-                <i className="fa fa-github"/>
+              <NavItem eventKey={1}>
+                <div className="search-field">
+                  <input type="text" />
+                  <i className="fa fa-search"/>
+                </div>
               </NavItem>
             </Nav>
           </Navbar.Collapse>
@@ -100,7 +103,7 @@ export default class App extends Component {
         {this.props.children}
         <footer>
           <div className="well text-center">
-            Футер
+            Інвестиційна мапа регіону 2017р. &nbsp;&#169; GKTeam
           </div>
         </footer>
       </div>

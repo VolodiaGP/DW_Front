@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { reduxForm, Field } from 'redux-form';
 import inputField from './../../components/ModalWindows/inputField';
-import { withGoogleMap, GoogleMap, Polygon } from 'react-google-maps';
+import { withGoogleMap, GoogleMap, Polygon, Marker } from 'react-google-maps';
 
 let currentCenter = {};
 
@@ -27,9 +27,26 @@ const GettingStartedGoogleMap = withGoogleMap(props => (
         />
       );
     })}
+    <Marker
+      position={{ lat: 50.454090, lng: 30.524743 }}
+      key={'current-marker-'}
+    />
   </GoogleMap>
 ));
 
+// {props.markers && props.markers.length !== 0 ? props.markers.map((marker, index) => {
+//   // const position = {
+//   //   lat: Number(marker.map_points[0].map_lat),
+//   //   lng: Number(marker.map_points[0].map_lon)
+//   // };
+//   const position = { lat: 50.454090, lng: 30.524743 };
+//   return (
+//     <Marker
+//       position={position}
+//       key={`current-marker-${index}`}
+//     />
+//   );
+// }) : ''}
 //   {props.markers && props.markers.length !== 0 ? props.markers.map((marker, index) => {
 //     const position = {
 //       lat: Number(marker.map_points[0].map_lat),
@@ -104,6 +121,7 @@ export default class CalculateInvestmentForm extends Component {
         <form onSubmit={handleSubmit}>
           <div className="form-elements">
             <div className="left-row">
+              <div className="title-row">Виставте пріоритет інвестиційних об'єктів для капіталовкладення:</div>
               {categoriesList && categoriesList.length !== 0 ? categoriesList.map(category =>
                 <div className="input-field" key={`category-id-${category.id}`}>
                   <div className="label">{category.title}:</div>
@@ -112,8 +130,17 @@ export default class CalculateInvestmentForm extends Component {
                   </div>
                 </div>
               ) : ''}
+              <br /><br />
+              <div className="input-field" key={'category-id-'}>
+                <div className="title-row">Вкажіть розмір фонду, який задовольнятиме вашим фінансовим можливостям: </div>
+                <div className="label">Інвестиційний фонд:</div>
+                <div className="field">
+                  <Field name="total-price" component={inputField} divClassName="input-text" />
+                </div>
+              </div>
             </div>
             <div className="right-row">
+              <div className="title-row">Вкажіть точку вашого об'кта: </div>
               <GettingStartedGoogleMap
                 containerElement={
                   <div style={{ height: `100%` }} />
@@ -129,9 +156,19 @@ export default class CalculateInvestmentForm extends Component {
             onClick={handleSubmit((values) => { console.log('values', values); })}
             className="default-dark-button"
           >
-            Зареєструватись
+            Обрахувати
           </div>
         </form>
+        <div className="result">
+          <div className="result-title">Результат: </div>
+          <div className="text">
+            <div>Найкращий шлях розподілення фонду в "15000000грн" наступний:</div>
+            <div className="row"><span>1 - Завод: </span> - (об'єкт) <a>Завод на оренду</a> <div></div></div>
+            <div className="row"><span>2 - Нафта:</span> - (об'єкт) <a>Нафта ПН-СХ2</a></div>
+            <div className="row"><span>3 - Телевізійна вишка:</span> - (об'єкт) <a>Телевізійна вишка</a></div>
+            <div className="row"><span>4 - Земельна ділянка:</span> - (об'єкт) <a>Земля</a></div>
+          </div>
+        </div>
       </div>
     );
   }
