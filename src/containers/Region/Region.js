@@ -1,7 +1,5 @@
 import React, {Component, PropTypes} from 'react';
 import Helmet from 'react-helmet';
-// import { withGoogleMap, GoogleMap, Marker, Polygon, InfoWindow, Circle } from 'react-google-maps';
-// import DrawingManager from 'react-google-maps/lib/drawing/DrawingManager';
 import { asyncConnect } from 'redux-connect';
 import { connect } from 'react-redux';
 import {
@@ -13,118 +11,9 @@ import {
   loadOwnershipForms,
   loadPeopleCategories,
   loadPeoples,
-  // toggleMarkerDisplay,
-  // setRegionToDisplay,
-  // setCategoriesToDisplay,
-  // setPeopleCategoriesToDisplay
 } from 'redux/modules/map';
 import Lightbox from 'react-image-lightbox';
 import CalculateInvestmentForm from './CalculateInvestmentForm';
-// import isInPolygon from '../../helpers/isInPolygon';
-
-// let currentCenter = {};
-
-// const GettingStartedGoogleMap = withGoogleMap(props => (
-//   <GoogleMap
-//     defaultZoom={10}
-//     defaultCenter={{ lat: 50.454090, lng: 30.524743 }}
-//     onClick={props.onMapClick}
-//     ref={(map) => {
-//       if (map) {
-//         if (currentCenter !== props.mapCenter) {
-//           map.panTo({ lat: Number(props.mapCenter.lat), lng: Number(props.mapCenter.lng) });
-//         }
-//         currentCenter = props.mapCenter;
-//       }
-//     }}
-//   >
-//     {props.regions.map((region) => {
-//       const path = region.map_points.map(point => ({ lat: Number(point.map_lat), lng: Number(point.map_lon) }));
-//       if (region.id === props.regionToDisplay) {
-//         return (
-//           <Polygon
-//             paths={path} onClick={(event) => { console.log('polygon', event, 'index = '); }}
-//             options={{
-//               strokeWeight: '1',
-//               fillColor: 'gray'
-//             }}
-//           />
-//         );
-//       }
-//     })}
-//     {props.markers.map((marker, index) => {
-//       const position = {
-//         lat: Number(marker.map_points[0].map_lat),
-//         lng: Number(marker.map_points[0].map_lon)
-//       };
-//       const contractType = props.contractTypes.find(element => Number(element.id) === Number(marker.contract_type));
-//       const holder = props.holders.find(element => Number(element.id) === Number(marker.holder));
-//       if (marker.region === props.regionToDisplay && props.categoriesToDisplay.includes(marker.category)) {
-//         const iconElement = {
-//           url: props.categories.find(category => category.id === marker.category).img_small,
-//         };
-//         return (
-//           <Marker
-//             position={position}
-//             onRightClick={() => props.onMarkerRightClick(marker.id)}
-//             onClick={() => props.onMarkerClick(marker.id)}
-//             icon={iconElement}
-//             key={`current-marker-${index}`}
-//           >
-//             {marker.showInfo && (
-//               <InfoWindow onCloseClick={() => props.onMarkerClick(marker.id)}>
-//                 <div className="info-container">
-//                   <div className="name">{marker.name}</div>
-//                   <div className="description">{marker.description}</div>
-//                   <div className="holder"><div className="title">Власник:</div>{holder.title}</div>
-//                   <div className="contract-type"><div className="title">Тип контракту:</div>{contractType.title}</div>
-//                   <div className="price"><div className="title">Ціна:</div>{marker.price} грн.</div>
-//                   <div className="metrics"><div className="title">Площа:</div>{marker.metrics} м<sup>2</sup></div>
-//                 </div>
-//               </InfoWindow>
-//             )}
-//           </Marker>
-//         );
-//       }
-//     })}
-//     {props.polygons.map((polygon, index) => {
-//       const path = polygon.map_points.map(point => ({ lat: Number(point.map_lat), lng: Number(point.map_lon) }));
-//       if (polygon.region === props.regionToDisplay && props.categoriesToDisplay.includes(polygon.category)) {
-//         return (
-//           <Polygon
-//             paths={path} onClick={(event) => { console.log('polygon', event, 'index = ', index); }}
-//           />
-//         );
-//       }
-//     })}
-//     {props.peoples.map((people) => {
-//       const position = ({ lat: Number(people.map_lat), lng: Number(people.map_lon) });
-//       if (people.region === props.regionToDisplay && props.peopleCategoriesToDisplay.includes(people.category)) {
-//         return (
-//           <Circle radius={300} center={position} fillColor={'red'} />
-//         );
-//       }
-//     })}
-//     <DrawingManager
-//       onCircleComplete={(aa, bb, cc) => { console.log('a,b,c onCircleComplete', aa, bb, cc); }}
-//       onMarkerComplete={(event) => {
-//         const point = {
-//           lat: event.position.lat(),
-//           lng: event.position.lng()
-//         };
-//         const polygonPoints = props.regions.find(region => region.id === props.regionToDisplay).map_points.
-//         map(element => ({
-//           lat: Number(element.map_lat),
-//           lng: Number(element.map_lon)
-//         }));
-//         if (!isInPolygon(point, polygonPoints)) {
-//           event.setVisible(false);
-//         }
-//       }}
-//       onOverlayComplete={(aa, bb, cc) => { console.log('a,b,c onOverlayComplete', aa, bb, cc); }}
-//     />
-//   </GoogleMap>
-// ));
 
 @asyncConnect([{
   promise: ({ store: { dispatch } }) => {
@@ -253,18 +142,10 @@ export default class Region extends Component {
   }
 
   render() {
-    // const { regions, objects, categories, contractTypes, holders, regionToDisplay, categoriesToDisplay,
-    //   ownershipForms, peopleCategories, peoples, mapCenter, peopleCategoriesToDisplay } = this.props;
-    const { regions, objects, categories, peopleCategories, peoples, params } = this.props;
+    const { regions, objects, categories, peopleCategories, peoples, params, contractTypes, holders } = this.props;
     const { isLightBoxOpen, isObjectsDisplay, objectsCategorySelected, peoplesCategorySelected,
       objectSelected, peopleSelected, isPeoplesObjectsDisplay, isInvestmentFormDisplay } = this.state;
-    console.log('this.props', this.props);
-    // const dispatch = this.context.store.dispatch;
-    // const markersList = objects.filter(element => element.map_points.length === 1);
-    // const polygonsList = objects.filter(element => element.map_points.length !== 1);
-    // console.log('mapCenter', mapCenter);
     const currentRegion = regions.find(region => Number(region.id) === Number(params.id));
-    // const currentObjects = objects.filter(object => Number(object.region === Number(params.id)));
     require('./Region.scss');
     return (
       <div className="global-region-container">
@@ -331,7 +212,31 @@ export default class Region extends Component {
                               {item.id === objectSelected && objects && objects.length !== 0 ?
                                 objects.filter(object => object.id === objectSelected).map(currentObject =>
                                   <div className="object-info">
-                                    {currentObject.description}
+                                    <div className="object-image">
+                                      <img src={currentObject.image} />
+                                    </div>
+                                    <div className="object-text">
+                                      <div className="description">{currentObject.description}</div>
+                                      <div className="stat">
+                                        <div>
+                                          <div className="key">Ціна:</div>
+                                          <div className="value">{currentObject.price} грн.</div>
+                                        </div>
+                                        <div>
+                                          <div className="key">Площа:</div>
+                                          <div className="value">{currentObject.metrics} м<sup>2</sup></div>
+                                        </div>
+                                        <div>
+                                          <div className="key">Власник:</div>
+                                          <div className="value">{holders.find(holder => holder.id === currentObject.holder).title}</div>
+                                        </div>
+                                        <div>
+                                          <div className="key">Тип договору:</div>
+                                          <div className="value">{contractTypes.find(contract => contract.id === currentObject.contract_type).title}</div>
+                                        </div>
+                                      </div>
+                                    </div>
+
                                   </div>
                               ) : ''}
                             </div>
@@ -376,7 +281,15 @@ export default class Region extends Component {
                         {item.id === peopleSelected && peoples && peoples.length !== 0 ?
                           peoples.filter(people => people.id === peopleSelected).map(currentPeople =>
                             <div className="object-info">
-                              {currentPeople.description}
+                              <div className="object-text">
+                                <div className="description">{currentPeople.description}</div>
+                                <div className="stat">
+                                  <div>
+                                    <div className="key">Кількість:</div>
+                                    <div className="value">{currentPeople.count} чол.</div>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
                           ) : ''}
                       </div>
