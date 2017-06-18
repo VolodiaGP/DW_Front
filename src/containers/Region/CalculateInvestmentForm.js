@@ -3,6 +3,7 @@ import { reduxForm, Field, formValueSelector } from 'redux-form';
 import inputField from './../../components/ModalWindows/inputField';
 import { withGoogleMap, GoogleMap, Polygon, Marker } from 'react-google-maps';
 import DrawingManager from 'react-google-maps/lib/drawing/DrawingManager';
+import Select from 'react-select';
 import isInPolygon from '../../helpers/isInPolygon';
 import { change } from 'redux-form';
 import { connect } from 'react-redux';
@@ -135,27 +136,50 @@ export default class CalculateInvestmentForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      markerObject: null
+      markerObject: null,
+      selectedItems: []
     };
+  }
+
+  handleSelectChange(selectedItems) {
+    this.setState({ selectedItems });
   }
 
   render() {
     const {
       handleSubmit, display, categoriesList, formMapLon, formMapLat, currentRegion
     } = this.props;
-    console.log('formMapLon', formMapLon);
-    console.log('formMapLat', formMapLat);
     const dispatch = this.context.store.dispatch;
-    console.log('current regions', currentRegion);
-    console.log('categoriesList', categoriesList);
+    const optionsData = categoriesList.map(item => ({
+      value: item.id, label: item.title
+    }));
+    const displayItems = this.state.selectedItems.map(item => item.value);
     return (
       <div className={`calculate-investment-form ${display ? 'display' : ''}`}>
         <form onSubmit={handleSubmit((submitValues) => { console.log('submitValues', submitValues); })}>
           <div className="form-elements">
             <div className="left-row">
-              <div className="title-row">Виставте пріоритет інвестиційних об'єктів для капіталовкладення:</div>
+              <div className="find-items">
+                <div className="title-row">Оберіть список необхідних категорій:</div>
+                <Select
+                  name="form-field-name"
+                  options={optionsData}
+                  onChange={(value) => { this.handleSelectChange(value); }}
+                  value={this.state.selectedItems}
+                  multi
+                />
+              </div>
+              <div
+                className="title-row"
+                style={{ display: `${displayItems.length !== 0 ? 'block' : 'none'}` }}
+              >
+                Виставте пріоритет інвестиційних об'єктів для капіталовкладення:
+              </div>
               {categoriesList && categoriesList.length !== 0 ? categoriesList.map(category =>
-                <div className="input-field" key={`category-id-${category.id}`}>
+                <div
+                  className="input-field" key={`category-id-${category.id}`}
+                  style={{ display: `${displayItems.includes(category.id) ? 'block' : 'none'}` }}
+                >
                   <div className="label">{category.title}:</div>
                   <div className="field">
                     <Field name={category.id} component={inputField} divClassName="input-text" />
