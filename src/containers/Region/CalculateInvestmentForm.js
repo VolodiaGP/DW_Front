@@ -1,65 +1,73 @@
 import React, { Component, PropTypes } from 'react';
-import { reduxForm, Field } from 'redux-form';
+import { reduxForm, Field, formValueSelector } from 'redux-form';
 import inputField from './../../components/ModalWindows/inputField';
 import { withGoogleMap, GoogleMap, Polygon, Marker } from 'react-google-maps';
+import DrawingManager from 'react-google-maps/lib/drawing/DrawingManager';
+import isInPolygon from '../../helpers/isInPolygon';
+import { change } from 'redux-form';
+import { connect } from 'react-redux';
 
 let currentCenter = {};
 
-const GettingStartedGoogleMap = withGoogleMap(props => (
-  <GoogleMap
-    defaultZoom={10}
-    defaultCenter={{ lat: props.polygons[0].center_lat, lng: props.polygons[0].center_lon }}
-    onClick={() => { console.log('click', props); }}
-    ref={(map) => {
-      if (map) {
-        if (currentCenter !== props.mapCenter) {
-          map.panTo({ lat: Number(props.polygons[0].center_lat), lng: Number(props.polygons[0].center_lon) });
+const GettingStartedGoogleMap = withGoogleMap(props => {
+  console.log('rposp', props);
+  console.log('props.marker', props.marker);
+  return (
+    <GoogleMap
+      defaultZoom={10}
+      defaultCenter={{ lat: Number(props.region.center_lat), lng: Number(props.region.center_lon) }}
+      onClick={() => { console.log('click', props); }}
+      ref={(map) => {
+        if (map) {
+          if (currentCenter !== props.mapCenter) {
+            map.panTo({ lat: Number(props.region.center_lat), lng: Number(props.region.center_lon) });
+          }
+          currentCenter = props.mapCenter;
         }
-        currentCenter = props.mapCenter;
-      }
-    }}
-  >
-    {props.polygons.map((polygon, index) => {
-      const path = polygon.map_points.map(point => ({ lat: Number(point.map_lat), lng: Number(point.map_lon) }));
-      return (
+      }}
+    >
+      {props && props.region && props.region.map_points.length !== 0 ?
         <Polygon
-          paths={path} key={`item-polygon-${index}`}
+          paths={props.region.map_points.map(
+            point => ({lat: Number(point.map_lat), lng: Number(point.map_lon)})
+          )}
+          options={{
+            strokeWeight: '1',
+            fillColor: 'gray'
+          }}
+          key={`item-polygon-`}
         />
-      );
-    })}
-    <Marker
-      position={{ lat: 50.454090, lng: 30.524743 }}
-      key={'current-marker-'}
-    />
-  </GoogleMap>
-));
-
-// {props.markers && props.markers.length !== 0 ? props.markers.map((marker, index) => {
-//   // const position = {
-//   //   lat: Number(marker.map_points[0].map_lat),
-//   //   lng: Number(marker.map_points[0].map_lon)
-//   // };
-//   const position = { lat: 50.454090, lng: 30.524743 };
-//   return (
-//     <Marker
-//       position={position}
-//       key={`current-marker-${index}`}
-//     />
-//   );
-// }) : ''}
-//   {props.markers && props.markers.length !== 0 ? props.markers.map((marker, index) => {
-//     const position = {
-//       lat: Number(marker.map_points[0].map_lat),
-//       lng: Number(marker.map_points[0].map_lon)
-//     };
-//     return (
-//       <Marker
-//         position={position}
-//         onClick={() => props.onMarkerClick(marker.id)}
-//         key={`current-marker-${index}`}
-//       />
-//     );
-//   }) : ''}
+        : ''}
+      <DrawingManager
+        onMarkerComplete={(event) => {
+          const point = {
+            lat: event.position.lat(),
+            lng: event.position.lng()
+          };
+          const polygonPoints = props.region.map_points.map(element => ({
+            lat: Number(element.map_lat),
+            lng: Number(element.map_lon)
+          }));
+          event.setVisible(false);
+          if (isInPolygon(point, polygonPoints)) {
+            props.onMarkerAdded(point);
+          }
+        }}
+        drawingMode={Marker}
+      />
+      {props && props.marker ?
+        <div className="ds">
+          <Marker
+            position={{
+              lat: Number(props.marker.lat),
+              lng: Number(props.marker.lng)
+            }}
+          />
+        </div>
+        : ''}
+    </GoogleMap>
+  );
+});
 
 const validate = (values) => {
   const requiredFields = ['first_name', 'last_name', 'email', 'login', 'password', 'submit_password'];
@@ -91,16 +99,25 @@ const validate = (values) => {
   return errors;
 };
 
+const selector = formValueSelector('calculateInvestmentForm');
 @reduxForm({
   form: 'calculateInvestmentForm',
   validate
 })
+@connect(
+  state => ({
+    formMapLon: selector(state, 'map_lon'),
+    formMapLat: selector(state, 'map_lat')
+  }),
+  {})
 export default class CalculateInvestmentForm extends Component {
   static propTypes = {
     handleSubmit: PropTypes.func.isRequired,
     display: PropTypes.bool,
     categoriesList: PropTypes.array,
-    currentRegion: PropTypes.object
+    currentRegion: PropTypes.object,
+    formMapLon: PropTypes.Number,
+    formMapLat: PropTypes.Number,
   };
 
   static contextTypes = {
@@ -110,15 +127,30 @@ export default class CalculateInvestmentForm extends Component {
   static defaultProps = {
     display: false,
     categoriesList: [],
-    currentRegion: {}
+    currentRegion: {},
+    formMapLon: null,
+    formMapLat: null
   };
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      markerObject: null
+    };
+  }
+
   render() {
-    const { handleSubmit, display, categoriesList, currentRegion } = this.props;
+    const {
+      handleSubmit, display, categoriesList, formMapLon, formMapLat, currentRegion
+    } = this.props;
+    console.log('formMapLon', formMapLon);
+    console.log('formMapLat', formMapLat);
+    const dispatch = this.context.store.dispatch;
+    console.log('current regions', currentRegion);
     console.log('categoriesList', categoriesList);
     return (
       <div className={`calculate-investment-form ${display ? 'display' : ''}`}>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit((submitValues) => { console.log('submitValues', submitValues); })}>
           <div className="form-elements">
             <div className="left-row">
               <div className="title-row">Виставте пріоритет інвестиційних об'єктів для капіталовкладення:</div>
@@ -135,7 +167,7 @@ export default class CalculateInvestmentForm extends Component {
                 <div className="title-row">Вкажіть розмір фонду, який задовольнятиме вашим фінансовим можливостям: </div>
                 <div className="label">Інвестиційний фонд:</div>
                 <div className="field">
-                  <Field name="total-price" component={inputField} divClassName="input-text" />
+                  <Field name="max_sum" component={inputField} divClassName="input-text" />
                 </div>
               </div>
             </div>
@@ -143,13 +175,36 @@ export default class CalculateInvestmentForm extends Component {
               <div className="title-row">Вкажіть точку вашого об'кта: </div>
               <GettingStartedGoogleMap
                 containerElement={
-                  <div style={{ height: `100%` }} />
+                  <div style={{ height: `300px` }} />
                 }
                 mapElement={
-                  <div style={{ height: `100%` }} />
+                  <div style={{ height: `300px` }} />
                 }
-                polygons={currentRegion}
+                region={currentRegion}
+                onMarkerAdded={(marker) => {
+                  this.setState({ markerObject: marker });
+                  dispatch(change('calculateInvestmentForm', 'map_lon', marker.lng));
+                  dispatch(change('calculateInvestmentForm', 'map_lat', marker.lat));
+                }}
+                marker={{
+                  lng: formMapLon,
+                  lat: formMapLat
+                }}
               />
+              <div className="form-row map-points">
+                <div className="input-field" key={`map-lon`}>
+                  <div className="label">Довгота об'єкту:</div>
+                  <div className="field">
+                    <Field name="map_lon" component={inputField} divClassName="input-text" />
+                  </div>
+                </div>
+                <div className="input-field" key={`map-lat`}>
+                  <div className="label">Широта об'єкту:</div>
+                  <div className="field">
+                    <Field name="map_lat" component={inputField} divClassName="input-text" />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           <div

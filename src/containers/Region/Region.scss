@@ -179,8 +179,13 @@
             .right-row {
               float: right;
               padding-top: 10px;
-              height: 400px;
               padding-right: 10px;
+              height: initial;
+              display: flex;
+              flex-direction: column;
+              .map-points {
+                margin-top: 10px;
+              }
             }
             .title-row {
               font-size: 14px;

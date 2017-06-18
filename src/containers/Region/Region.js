@@ -313,7 +313,7 @@ export default class Region extends Component {
               objects.filter(obj => obj.category === category.id
                 && Number(obj.region) === Number(params.id)).length !== 0) : []}
             markers={objects}
-            currentRegion={regions.filter(region => Number(region.id) === Number(params.id))}
+            currentRegion={regions.find(region => Number(region.id) === Number(params.id))}
           />
         </div>
       </div>
