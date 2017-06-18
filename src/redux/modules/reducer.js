@@ -11,6 +11,7 @@ import info from './info';
 import widgets from './widgets';
 import modal from './modal';
 import map from './map';
+import requests from './requests';
 
 export default combineReducers({
   routing: routerReducer,
@@ -19,6 +20,7 @@ export default combineReducers({
   form: formReducer,
   modal,
   map,
+  requests,
   multireducer: multireducer({
     counter1: counter,
     counter2: counter,

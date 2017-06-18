@@ -7,12 +7,11 @@ import Select from 'react-select';
 import isInPolygon from '../../helpers/isInPolygon';
 import { change } from 'redux-form';
 import { connect } from 'react-redux';
+import { calculateInvestment } from 'redux/modules/requests';
 
 let currentCenter = {};
 
 const GettingStartedGoogleMap = withGoogleMap(props => {
-  console.log('rposp', props);
-  console.log('props.marker', props.marker);
   return (
     <GoogleMap
       defaultZoom={10}
@@ -145,6 +144,12 @@ export default class CalculateInvestmentForm extends Component {
     this.setState({ selectedItems });
   }
 
+  createArray(values) {
+    const dispatch = this.context.store.dispatch;
+    console.log('values', values);
+    dispatch(calculateInvestment(values.map_lon, values.map_lat, values.max_sum, values));
+  }
+
   render() {
     const {
       handleSubmit, display, categoriesList, formMapLon, formMapLat, currentRegion
@@ -156,12 +161,13 @@ export default class CalculateInvestmentForm extends Component {
     const displayItems = this.state.selectedItems.map(item => item.value);
     return (
       <div className={`calculate-investment-form ${display ? 'display' : ''}`}>
-        <form onSubmit={handleSubmit((submitValues) => { console.log('submitValues', submitValues); })}>
+        <form onSubmit={handleSubmit((submitValues) => { this.createArray(submitValues); })}>
           <div className="form-elements">
             <div className="left-row">
               <div className="find-items">
                 <div className="title-row">Оберіть список необхідних категорій:</div>
                 <Select
+                  placeholder="Список категорій"
                   name="form-field-name"
                   options={optionsData}
                   onChange={(value) => { this.handleSelectChange(value); }}
@@ -232,7 +238,7 @@ export default class CalculateInvestmentForm extends Component {
             </div>
           </div>
           <div
-            onClick={handleSubmit((values) => { console.log('values', values); })}
+            onClick={handleSubmit((submitValues) => { this.createArray(submitValues); })}
             className="default-dark-button"
           >
             Обрахувати
