@@ -16,7 +16,8 @@ import {
   toggleMarkerDisplay,
   setRegionToDisplay,
   setCategoriesToDisplay,
-  setPeopleCategoriesToDisplay
+  setPeopleCategoriesToDisplay,
+  setContractTypeToDisplay
 } from 'redux/modules/map';
 import isInPolygon from '../../helpers/isInPolygon';
 
@@ -61,7 +62,7 @@ const GettingStartedGoogleMap = withGoogleMap(props => (
         const iconElement = {
           url: props.categories.find(category => category.id === marker.category).img_small,
         };
-        return (
+        const returnObject = (
           <Marker
             position={position}
             onRightClick={() => props.onMarkerRightClick(marker.id)}
@@ -83,6 +84,17 @@ const GettingStartedGoogleMap = withGoogleMap(props => (
             )}
           </Marker>
         );
+        if (props.contractTypesToDisplay && props.contractTypesToDisplay.length !== 0) {
+          if (props.contractTypesToDisplay.includes(marker.contract_type)) {
+            return (
+              returnObject
+            );
+          }
+        } else {
+          return (
+            returnObject
+          );
+        }
       }
     })}
     {props.polygons.map((polygon, index) => {
@@ -166,6 +178,7 @@ const GettingStartedGoogleMap = withGoogleMap(props => (
     regionToDisplay: state.map.regionToDisplay,
     categoriesToDisplay: state.map.categoriesToDisplay,
     peopleCategoriesToDisplay: state.map.peopleCategoriesToDisplay,
+    contractTypesToDisplay: state.map.contractTypesToDisplay,
   })
 )
 export default class Map extends Component {
@@ -182,6 +195,7 @@ export default class Map extends Component {
     regionToDisplay: PropTypes.number,
     categoriesToDisplay: PropTypes.array,
     peopleCategoriesToDisplay: PropTypes.array,
+    contractTypesToDisplay: PropTypes.array,
   };
 
   static contextTypes = {
@@ -201,6 +215,7 @@ export default class Map extends Component {
     regionToDisplay: null,
     categoriesToDisplay: [],
     peopleCategoriesToDisplay: [],
+    contractTypesToDisplay: [],
   };
 
   constructor(props) {
@@ -220,8 +235,11 @@ export default class Map extends Component {
   }
 
   render() {
-    const { regions, objects, categories, contractTypes, holders, regionToDisplay, categoriesToDisplay,
-      ownershipForms, peopleCategories, peoples, mapCenter, peopleCategoriesToDisplay } = this.props;
+    const {
+      regions, objects, categories, contractTypes, holders, regionToDisplay, categoriesToDisplay,
+      ownershipForms, peopleCategories, peoples, mapCenter, peopleCategoriesToDisplay,
+      contractTypesToDisplay
+    } = this.props;
     const dispatch = this.context.store.dispatch;
     const markersList = objects.filter(element => element.map_points.length === 1);
     const polygonsList = objects.filter(element => element.map_points.length !== 1);
@@ -255,6 +273,7 @@ export default class Map extends Component {
             onMarkerClick={(index) => {
               dispatch(toggleMarkerDisplay(index));
             }}
+            contractTypesToDisplay={contractTypesToDisplay}
           />
         </div>
         <div className="filters-container">
@@ -265,6 +284,19 @@ export default class Map extends Component {
                 <div
                   className={`region-item ${element.id === regionToDisplay ? 'active' : ''}`}
                   onClick={() => { dispatch(setRegionToDisplay(element.center_lat, element.center_lon, element.id)); }}
+                >
+                  {element.title}
+                </div>
+              ) : ''}
+            </div>
+          </div>
+          <div className="regions-list">
+            <div className="title">Типи договорів</div>
+            <div className="list">
+              {contractTypes && contractTypes.length !== 0 ? contractTypes.map(element =>
+                <div
+                  className={`region-item ${contractTypesToDisplay.includes(element.id) ? 'active' : ''}`}
+                  onClick={() => { dispatch(setContractTypeToDisplay(element.id)); }}
                 >
                   {element.title}
                 </div>

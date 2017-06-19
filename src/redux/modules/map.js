@@ -11,6 +11,7 @@ const TOGGLE_MARKER_DISPLAY = 'redux-example/map/TOGGLE_MARKER_DISPLAY';
 const SET_REGION_TO_DISPLAY = 'redux-example/map/SET_REGION_TO_DISPLAY';
 const SET_CATEGORIES_TO_DISPLAY = 'redux-example/map/SET_CATEGORIES_TO_DISPLAY';
 const SET_PEOPLE_CATEGORIES_TO_DISPLAY = 'redux-example/map/SET_PEOPLE_CATEGORIES_TO_DISPLAY';
+const SET_CONTRACT_TYPE_TO_DISPLAY = 'redux-example/map/SET_CONTRACT_TYPE_TO_DISPLAY';
 const LOAD_FAIL = 'redux-example/map/LOAD_FAIL';
 
 const initialState = {
@@ -27,7 +28,8 @@ const initialState = {
   mapCenter: { lat: 50.454090, lng: 30.524743 },
   regionToDisplay: 1,
   categoriesToDisplay: [],
-  peopleCategoriesToDisplay: []
+  peopleCategoriesToDisplay: [],
+  contractTypesToDisplay: []
 };
 
 export default function reducer(state = initialState, action = {}) {
@@ -136,6 +138,16 @@ export default function reducer(state = initialState, action = {}) {
         ...state,
         peopleCategoriesToDisplay: peopleCategoriesArray
       };
+    case SET_CONTRACT_TYPE_TO_DISPLAY:
+      const currentContractTypes = [...state.contractTypesToDisplay];
+      const contractTypeId = action.contractTypeId;
+      const contractsArray = currentContractTypes.includes(contractTypeId) ?
+        currentContractTypes.filter(element => element !== contractTypeId) :
+        [...currentContractTypes, contractTypeId];
+      return {
+        ...state,
+        contractTypesToDisplay: contractsArray
+      };
     default:
       return state;
   }
@@ -228,6 +240,13 @@ export function setPeopleCategoriesToDisplay(categoryId) {
   return {
     type: SET_PEOPLE_CATEGORIES_TO_DISPLAY,
     categoryId
+  };
+}
+
+export function setContractTypeToDisplay(contractTypeId) {
+  return {
+    type: SET_CONTRACT_TYPE_TO_DISPLAY,
+    contractTypeId
   };
 }
 
