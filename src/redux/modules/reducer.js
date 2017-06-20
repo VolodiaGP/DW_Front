@@ -12,6 +12,7 @@ import widgets from './widgets';
 import modal from './modal';
 import map from './map';
 import requests from './requests';
+import search from './search';
 
 export default combineReducers({
   routing: routerReducer,
@@ -28,5 +29,6 @@ export default combineReducers({
   }),
   info,
   pagination,
-  widgets
+  widgets,
+  search
 });

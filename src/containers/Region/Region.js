@@ -153,14 +153,14 @@ export default class Region extends Component {
         <div className="region-description">
           <div className="left-part">
             <div className="region-image" onClick={() => this.setState({ isLightBoxOpen: true })}>
-              <img src="http://skyandmethod.com/wp-content/uploads/2014/09/IMG_9949_sandm_majdan_SM.jpg" />
+              <img src={currentRegion.image} />
             </div>
             <div className="show-more" onClick={() => this.setState({ isLightBoxOpen: true })}>
               Натисніть на зображення для збільшення.
             </div>
             {isLightBoxOpen ?
               <Lightbox
-                mainSrc={['http://skyandmethod.com/wp-content/uploads/2014/09/IMG_9949_sandm_majdan_SM.jpg']}
+                mainSrc={currentRegion.image}
                 onCloseRequest={() => this.setState({ isLightBoxOpen: false })}
               />
             : ''}

@@ -81,7 +81,7 @@ export function loginFromCookie() {
 export function login(username, password) {
   return {
     types: [LOGIN, LOGIN_SUCCESS, LOGIN_FAIL],
-    promise: (client) => client.post('http://127.0.0.1:8000/auth/token', {
+    promise: (client) => client.post('http://diploma-investment-map.herokuapp.com/auth/token', {
       data: {
         'username': username,
         'password': password

@@ -160,56 +160,56 @@ export function isLoaded(globalState) {
 export function loadRegions() {
   return {
     types: [LOAD, LOAD_REGIONS_SUCCESS, LOAD_FAIL],
-    promise: (client) => client.get('http://127.0.0.1:8000/api/regions/')
+    promise: (client) => client.get('http://diploma-investment-map.herokuapp.com/api/regions/')
   };
 }
 
 export function loadObjects() {
   return {
     types: [LOAD, LOAD_OBJECTS_SUCCESS, LOAD_FAIL],
-    promise: (client) => client.get('http://127.0.0.1:8000/api/objects/')
+    promise: (client) => client.get('http://diploma-investment-map.herokuapp.com/api/objects/')
   };
 }
 
 export function loadCategories() {
   return {
     types: [LOAD, LOAD_CATEGOIRES_SUCCESS, LOAD_FAIL],
-    promise: (client) => client.get('http://127.0.0.1:8000/api/category/')
+    promise: (client) => client.get('http://diploma-investment-map.herokuapp.com/api/category/')
   };
 }
 
 export function loadContractTypes() {
   return {
     types: [LOAD, LOAD_CONTRACT_TYPES_SUCCESS, LOAD_FAIL],
-    promise: (client) => client.get('http://127.0.0.1:8000/api/contract_type/')
+    promise: (client) => client.get('http://diploma-investment-map.herokuapp.com/api/contract_type/')
   };
 }
 
 export function loadHolders() {
   return {
     types: [LOAD, LOAD_HOLDERS_SUCCESS, LOAD_FAIL],
-    promise: (client) => client.get('http://127.0.0.1:8000/api/holders/')
+    promise: (client) => client.get('http://diploma-investment-map.herokuapp.com/api/holders/')
   };
 }
 
 export function loadOwnershipForms() {
   return {
     types: [LOAD, LOAD_OWNERSHIP_FORMS_SUCCESS, LOAD_FAIL],
-    promise: (client) => client.get('http://127.0.0.1:8000/api/ownership_forms/')
+    promise: (client) => client.get('http://diploma-investment-map.herokuapp.com/api/ownership_forms/')
   };
 }
 
 export function loadPeopleCategories() {
   return {
     types: [LOAD, LOAD_PEOPLE_CATEGORIES_SUCCESS, LOAD_FAIL],
-    promise: (client) => client.get('http://127.0.0.1:8000/api/people_categories/')
+    promise: (client) => client.get('http://diploma-investment-map.herokuapp.com/api/people_categories/')
   };
 }
 
 export function loadPeoples() {
   return {
     types: [LOAD, LOAD_PEOPLES_SUCCESS, LOAD_FAIL],
-    promise: (client) => client.get('http://127.0.0.1:8000/api/peoples/')
+    promise: (client) => client.get('http://diploma-investment-map.herokuapp.com/api/peoples/')
   };
 }
 

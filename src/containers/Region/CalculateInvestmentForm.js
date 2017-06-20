@@ -10,6 +10,8 @@ import { connect } from 'react-redux';
 import { calculateInvestment } from 'redux/modules/requests';
 
 let currentCenter = {};
+let maxPrice = null;
+
 
 const GettingStartedGoogleMap = withGoogleMap(props => {
   return (
@@ -107,7 +109,8 @@ const selector = formValueSelector('calculateInvestmentForm');
 @connect(
   state => ({
     formMapLon: selector(state, 'map_lon'),
-    formMapLat: selector(state, 'map_lat')
+    formMapLat: selector(state, 'map_lat'),
+    formResult: state.requests.calculateInvestmentResult
   }),
   {})
 export default class CalculateInvestmentForm extends Component {
@@ -118,6 +121,7 @@ export default class CalculateInvestmentForm extends Component {
     currentRegion: PropTypes.object,
     formMapLon: PropTypes.Number,
     formMapLat: PropTypes.Number,
+    calculateInvestmentResult: PropTypes.Array,
   };
 
   static contextTypes = {
@@ -129,7 +133,8 @@ export default class CalculateInvestmentForm extends Component {
     categoriesList: [],
     currentRegion: {},
     formMapLon: null,
-    formMapLat: null
+    formMapLat: null,
+    calculateInvestmentResult: []
   };
 
   constructor(props) {
@@ -146,13 +151,19 @@ export default class CalculateInvestmentForm extends Component {
 
   createArray(values) {
     const dispatch = this.context.store.dispatch;
-    console.log('values', values);
-    dispatch(calculateInvestment(values.map_lon, values.map_lat, values.max_sum, values));
+    const postValues = values;
+    const mapLon = values.map_lon;
+    const mapLat = values.map_lat;
+    maxPrice = values.max_price;
+    delete postValues.map_lat;
+    delete postValues.map_lon;
+    delete postValues.max_price;
+    dispatch(calculateInvestment(mapLon, mapLat, maxPrice, postValues));
   }
 
   render() {
     const {
-      handleSubmit, display, categoriesList, formMapLon, formMapLat, currentRegion
+      handleSubmit, display, categoriesList, formMapLon, formMapLat, currentRegion, calculateInvestmentResult
     } = this.props;
     const dispatch = this.context.store.dispatch;
     const optionsData = categoriesList.map(item => ({
@@ -197,7 +208,7 @@ export default class CalculateInvestmentForm extends Component {
                 <div className="title-row">Вкажіть розмір фонду, який задовольнятиме вашим фінансовим можливостям: </div>
                 <div className="label">Інвестиційний фонд:</div>
                 <div className="field">
-                  <Field name="max_sum" component={inputField} divClassName="input-text" />
+                  <Field name="max_price" component={inputField} divClassName="input-text" />
                 </div>
               </div>
             </div>
@@ -247,11 +258,11 @@ export default class CalculateInvestmentForm extends Component {
         <div className="result">
           <div className="result-title">Результат: </div>
           <div className="text">
-            <div>Найкращий шлях розподілення фонду в "15000000грн" наступний:</div>
-            <div className="row"><span>1 - Завод: </span> - (об'єкт) <a>Завод на оренду</a> <div></div></div>
-            <div className="row"><span>2 - Нафта:</span> - (об'єкт) <a>Нафта ПН-СХ2</a></div>
-            <div className="row"><span>3 - Телевізійна вишка:</span> - (об'єкт) <a>Телевізійна вишка</a></div>
-            <div className="row"><span>4 - Земельна ділянка:</span> - (об'єкт) <a>Земля</a></div>
+            <div>Найкращий шлях розподілення фонду в "{maxPrice} грн" наступний:</div>
+            {calculateInvestmentResult && calculateInvestmentResult.length !== 0 ?
+              calculateInvestmentResult.map((item, key) =>
+                <div className="row"><span>{key + 1} - {item.key}: </span> - (об'єкт) <a>{item.value}</a> <div></div></div>
+            ) : ''}
           </div>
         </div>
       </div>

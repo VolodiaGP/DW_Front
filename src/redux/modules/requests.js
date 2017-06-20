@@ -35,7 +35,7 @@ export function calculateInvestment(mapLon, mapLat, maxSize, categories) {
   console.log('mapLon, mapLat, maxSize, categories', mapLon, mapLat, maxSize, categories);
   return {
     types: [CALCULATE_INVESTMENT_START, CALCULATE_INVESTMENT, CALCULATE_INVESTMENT_FAIL],
-    promise: (client) => client.post('http://127.0.0.1:8000/auth/token', {
+    promise: (client) => client.post('http://diploma-investment-map.herokuapp.com/math/', {
       data: {
         'map_lon': mapLon,
         'map_lat': mapLat,

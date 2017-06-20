@@ -293,13 +293,15 @@ export default class Map extends Component {
           <div className="regions-list">
             <div className="title">Типи договорів</div>
             <div className="list">
-              {contractTypes && contractTypes.length !== 0 ? contractTypes.map(element =>
-                <div
-                  className={`region-item ${contractTypesToDisplay.includes(element.id) ? 'active' : ''}`}
-                  onClick={() => { dispatch(setContractTypeToDisplay(element.id)); }}
-                >
-                  {element.title}
-                </div>
+              {contractTypes && contractTypes.length !== 0 ?
+                contractTypes.filter(element => objects.filter(object => object.contract_type === element.id
+                && object.region === regionToDisplay).length !== 0).map(element =>
+                  <div
+                    className={`region-item ${contractTypesToDisplay.includes(element.id) ? 'active' : ''}`}
+                    onClick={() => { dispatch(setContractTypeToDisplay(element.id)); }}
+                  >
+                    {element.title}
+                  </div>
               ) : ''}
             </div>
           </div>
