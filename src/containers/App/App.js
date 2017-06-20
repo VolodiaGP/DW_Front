@@ -88,10 +88,6 @@ export default class App extends Component {
 
           <Navbar.Collapse eventKey={0}>
             <Nav navbar>
-              <LinkContainer to="/about">
-                <NavItem eventKey={5}>Про нас</NavItem>
-              </LinkContainer>
-
               {!auth.token &&
               <LinkContainer to="/login">
                 <NavItem eventKey={6}>Вхід</NavItem>
