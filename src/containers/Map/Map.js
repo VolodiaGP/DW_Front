@@ -113,15 +113,17 @@ const GettingStartedGoogleMap = withGoogleMap(props => (
     })}
     {props.peoples.map((people) => {
       const position = ({ lat: Number(people.map_lat), lng: Number(people.map_lon) });
+      console.log('prople', people);
       if (people.region === props.regionToDisplay && props.peopleCategoriesToDisplay.includes(people.category)) {
+        const peopleCategory = props.peopleCategories.find(item => item.id === people.category);
         return (
           <Circle
-            radius={1000}
+            radius={people.count ? people.count / 20 : 0}
             center={position}
             fillColor={'red'}
             options={{
               strokeWeight: '1',
-              fillColor: 'red'
+              fillColor: peopleCategory && peopleCategory.color ? peopleCategory.color : 'grey'
             }}
           />
         );
