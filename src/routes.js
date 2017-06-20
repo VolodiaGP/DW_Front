@@ -13,7 +13,8 @@ import {
     NotFound,
     Pagination,
     Map,
-    Region
+    Region,
+    Search
   } from 'containers';
 
 export default (store) => {
@@ -56,6 +57,7 @@ export default (store) => {
       <Route path="survey" component={Survey}/>
       <Route path="widgets" component={Widgets}/>
       <Route path="region/:id" component={Region} />
+      <Route path="search" component={Search} />
 
       { /* Catch all route */ }
       <Route path="*" component={NotFound} status={404} />

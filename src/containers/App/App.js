@@ -10,7 +10,7 @@ import { push } from 'react-router-redux';
 import config from '../../config';
 import { asyncConnect } from 'redux-async-connect';
 import { loginFromCookie, logout } from 'redux/modules/auth';
-import { toggleSearchFieldDisplay } from 'redux/modules/search';
+import { toggleSearchFieldDisplay, setQuery, findByQuery } from 'redux/modules/search';
 import ModalWindow from '../../components/ModalWindows/ModalWindow';
 
 @asyncConnect([{
@@ -25,6 +25,7 @@ import ModalWindow from '../../components/ModalWindows/ModalWindow';
 @connect(
   state => ({
     searchFieldEnabled: state.search.searchFieldEnabled,
+    searchQuery: state.search.searchQuery,
     auth: state.auth
   }),
   { pushState: push})
@@ -34,7 +35,8 @@ export default class App extends Component {
     auth: PropTypes.object,
     logout: PropTypes.func.isRequired,
     pushState: PropTypes.func.isRequired,
-    searchFieldEnabled: PropTypes.bool
+    searchFieldEnabled: PropTypes.bool,
+    searchQuery: PropTypes.String,
   };
 
   static contextTypes = {
@@ -42,7 +44,8 @@ export default class App extends Component {
   };
 
   static defaultProps = {
-    searchFieldEnabled: false
+    searchFieldEnabled: false,
+    searchQuery: ''
   };
   // componentWillReceiveProps(nextProps) {
     // if (!this.props.user && nextProps.user) {
@@ -59,8 +62,13 @@ export default class App extends Component {
     // this.props.logout();
   };
 
+  handleSearchChange(event) {
+    const dispatch = this.context.store.dispatch;
+    dispatch(setQuery(event.target.value));
+  }
+
   render() {
-    const {auth, searchFieldEnabled} = this.props;
+    const {auth, searchFieldEnabled, searchQuery} = this.props;
     const styles = require('./App.scss');
     const dispatch = this.context.store.dispatch;
     return (
@@ -101,10 +109,21 @@ export default class App extends Component {
             <Nav navbar pullRight>
               <NavItem eventKey={1}>
                 <div className="search-field">
-                  <input type="text" className={`${searchFieldEnabled ? 'display-full' : 'display-sm'}`}/>
+                  <input
+                    value={searchQuery}
+                    onChange={(arg) => { this.handleSearchChange(arg); }}
+                    type="text" className={`${searchFieldEnabled ? 'display-full' : 'display-sm'}`}
+                  />
                   <i
                     className={`fa fa-search ${!searchFieldEnabled ? 'gray' : ''}`}
-                    onClick={() => { dispatch(toggleSearchFieldDisplay()); }}
+                    onClick={() => {
+                      if (searchQuery) {
+                        dispatch(findByQuery(searchQuery));
+                        dispatch(push('/search'));
+                      } else {
+                        dispatch(toggleSearchFieldDisplay());
+                      }
+                    }}
                   />
                 </div>
               </NavItem>
