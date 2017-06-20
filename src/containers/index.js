@@ -11,3 +11,4 @@ export Pagination from './Pagination/Pagination';
 export Map from './Map/Map';
 export Region from './Region/Region';
 export Search from './Search/Search';
+export InvestObject from './InvestObject/InvestObject';

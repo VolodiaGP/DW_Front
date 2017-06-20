@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import { asyncConnect } from 'redux-connect';
 import { connect } from 'react-redux';
+import { Link } from 'react-router';
 import {
   loadRegions,
   loadObjects,
@@ -70,7 +71,9 @@ export default class Search extends Component {
           <div className="search-results">
             {searchResults && searchResults.region ? searchResults.region.map(region =>
               <div className="item">
-                <div className="type"><span className="type">Регіони</span> - {region.title ? region.title : ''}</div>
+                <div className="type"><span className="type">Регіони</span> -
+                  <Link to={`/region/${region.id}`}>{region.title ? region.title : ''}</Link>
+                </div>
                 {/* <div className="description">Сховати детальну інформацію</div> */}
                 <div className="ololo">
                   <div className="description">{region.description ? region.description : ''}</div>
@@ -119,7 +122,8 @@ export default class Search extends Component {
             {searchResults && searchResults.investmentobject ? searchResults.investmentobject.map(object =>
               <div className="item">
                 <div className="type">
-                  <span className="type">Інвестиційні об'єкти</span> - {object.name ? object.name : ''}
+                  <span className="type">Інвестиційні об'єкти</span> -
+                    <Link to={`/invest_object/${object.id}`}>{object.name ? object.name : ''}</Link>
                 </div>
                 <div className="ololo">
                   <div className="description">{object.description ? object.description : ''}</div>

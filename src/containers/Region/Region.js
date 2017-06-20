@@ -2,6 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import Helmet from 'react-helmet';
 import { asyncConnect } from 'redux-connect';
 import { connect } from 'react-redux';
+import { Link } from 'react-router';
 import {
   loadRegions,
   loadObjects,
@@ -206,7 +207,7 @@ export default class Region extends Component {
                               className={`object-title ${objectSelected === item.id ? 'active' : ''}`}
                               onClick={() => { this.setObjectToDisplay(item.id); }}
                             >
-                              {item.name}
+                              <Link to={`/invest_object/${item.id}`}>{item.name ? item.name : ''}</Link>
                             </div>
                             <div className={`object-description ${objectSelected === item.id ? 'display' : ''}`}>
                               {item.id === objectSelected && objects && objects.length !== 0 ?

@@ -14,7 +14,8 @@ import {
     Pagination,
     Map,
     Region,
-    Search
+    Search,
+    InvestObject
   } from 'containers';
 
 export default (store) => {
@@ -58,6 +59,7 @@ export default (store) => {
       <Route path="widgets" component={Widgets}/>
       <Route path="region/:id" component={Region} />
       <Route path="search" component={Search} />
+      <Route path="invest_object/:id" component={InvestObject} />
 
       { /* Catch all route */ }
       <Route path="*" component={NotFound} status={404} />
