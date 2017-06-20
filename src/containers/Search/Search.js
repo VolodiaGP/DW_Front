@@ -26,7 +26,7 @@ export default class Search extends Component {
       <div className="container search-container">
         {searchResults && searchResults.message
           ?
-            <div className="title">За вашим запитом <span>"{searchQuery}"</span> не було знайдено жодних результатів:</div>
+            <div className="title">За вашим запитом <span>"{searchQuery}"</span> не було знайдено жодних результатів</div>
           :
             <div className="title">За вашим запитом <span>"{searchQuery}"</span> було отримано наступні результати:</div>
         }
@@ -84,8 +84,6 @@ export default class Search extends Component {
             </div>
           </div>
         </div>
-        <h1>Doh! 404!</h1>
-        <p>These are <em>not</em> the droids you are looking for!</p>
       </div>
     );
   }
