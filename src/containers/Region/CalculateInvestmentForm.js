@@ -16,7 +16,7 @@ let maxPrice = null;
 const GettingStartedGoogleMap = withGoogleMap(props => {
   return (
     <GoogleMap
-      defaultZoom={10}
+      defaultZoom={9}
       defaultCenter={{ lat: Number(props.region.center_lat), lng: Number(props.region.center_lon) }}
       onClick={() => { console.log('click', props); }}
       ref={(map) => {
@@ -110,7 +110,7 @@ const selector = formValueSelector('calculateInvestmentForm');
   state => ({
     formMapLon: selector(state, 'map_lon'),
     formMapLat: selector(state, 'map_lat'),
-    formResult: state.requests.calculateInvestmentResult
+    calculateInvestmentResult: state.requests.calculateInvestmentResult
   }),
   {})
 export default class CalculateInvestmentForm extends Component {
